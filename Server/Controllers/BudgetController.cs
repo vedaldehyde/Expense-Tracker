@@ -18,7 +18,7 @@ namespace Server.Controllers
         public async Task<IActionResult> CreateBudget([FromBody] BudgetRequest request)
         {
             await _budgetBL.CreateBudgetAsync(request);
-            return Ok();
+            return Ok(new { message = "Budget created" });
         }
     }
 }

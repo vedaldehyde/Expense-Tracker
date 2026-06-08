@@ -27,9 +27,6 @@ namespace Models
         [Column("is_active")]
         public bool is_active { get; set; }
 
-        [Column("created_at")]
-        public DateTime? created_at { get; set; }
-
     }
     
     public class BudgetRequest
