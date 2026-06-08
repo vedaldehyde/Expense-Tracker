@@ -1,0 +1,16 @@
+# Node (React)
+client/node_modules/
+client/build/
+node_modules/
+
+# .NET
+Server/bin/
+Server/obj/
+**/bin/
+**/obj/
+
+# env
+.env
+
+# mac
+.DS_Store
