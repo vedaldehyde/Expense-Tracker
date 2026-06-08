@@ -15,6 +15,7 @@ namespace DL
         {
             var budget = new Budget
             {
+                budget_name = request.budget_name,
                 id = Guid.NewGuid(),
                 user_id = Guid.Parse("a54182db-cb26-4f43-abb7-abad3c04e6f5"),
                 start_date = request.start_date,

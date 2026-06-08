@@ -12,6 +12,9 @@ namespace Models
         [Column("user_id")]
         public Guid user_id { get; set; }
 
+        [Column("budget_name")]
+        public string? budget_name { get; set; }
+
         [Column("start_date")]
         public DateTime start_date { get; set; }
 
@@ -31,6 +34,7 @@ namespace Models
     
     public class BudgetRequest
     {
+        public string? budget_name { get; set; }
         public DateTime start_date { get; set; }
         public DateTime end_date { get; set; }
         public double target_amount { get; set; }
