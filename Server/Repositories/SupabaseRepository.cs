@@ -62,17 +62,25 @@ namespace Repositories
 
         public async Task<List<TResult>>ExecuteFunctionAsync<TResult>(string functionName, Dictionary<string, object>? parameters = null)
         {
-            parameters ??= new Dictionary<string, object>();
-
-            var response = await _client.Rpc(functionName, parameters);
-            var json = response.Content;
-
-            if (string.IsNullOrEmpty(json))
+            try
             {
-                return new List<TResult>();
-            }
+                parameters ??= new Dictionary<string, object>();
 
-            return JsonSerializer.Deserialize<List<TResult>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new List<TResult>();
+                var response = await _client.Rpc(functionName, parameters);
+                var json = response.Content;
+
+                if (string.IsNullOrEmpty(json))
+                {
+                    return new List<TResult>();
+                }
+                return JsonSerializer.Deserialize<List<TResult>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new List<TResult>();
+
+            }
+            catch (System.Exception e)
+            {
+                System.Console.WriteLine(e.Message.ToString());
+            }
+            return null;
         }
     }
 }

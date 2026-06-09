@@ -32,5 +32,15 @@ namespace DL
                System.Console.WriteLine(e.Message.ToString());
             }
         }
+
+        public async Task<List<BudgetDetails>> GetBudgetsFromDB()
+        {
+            Dictionary<string, object> parameters = new Dictionary<string, object>
+            {
+                { "p_user_id", Guid.Parse("a54182db-cb26-4f43-abb7-abad3c04e6f5")}
+            };
+            var list = await _supabaseRepository.ExecuteFunctionAsync<BudgetDetails>("get_budget_dashboard", parameters);
+            return list ?? new List<BudgetDetails>();
+        }
     }
 }

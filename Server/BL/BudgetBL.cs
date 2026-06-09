@@ -22,5 +22,11 @@ namespace BL
                System.Console.WriteLine(e.Message.ToString());
             }
         }
+        
+        public async Task<List<BudgetDetails>> GetBudgetsAsync()
+        {
+            var list = await _budgetDL.GetBudgetsFromDB();
+            return list;
+        }
     }
 }

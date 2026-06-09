@@ -20,5 +20,12 @@ namespace Server.Controllers
             await _budgetBL.CreateBudgetAsync(request);
             return Ok(new { message = "Budget created" });
         }
+
+        [HttpPost("GetBudgets")]
+        public async Task<IActionResult> GetBudgets()
+        {
+            var expenses = await _budgetBL.GetBudgetsAsync();
+            return Ok(expenses);
+        }
     }
 }
