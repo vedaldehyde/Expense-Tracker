@@ -1,9 +1,9 @@
 import React, { useContext } from 'react'
 import AppContext from '../../context/AppContext'
-import { getExpenses, submitExpenseForm } from '../../APIs/api'
+import { getBudgets, getExpenses, submitExpenseForm } from '../../APIs/api'
 
 const ExpenseForm = () => {
-    const { expenseModal, toggleExpenseModal, expenseCategories, setExpenses } = useContext(AppContext)
+    const { expenseModal, toggleExpenseModal, expenseCategories, setExpenses, setBudgets } = useContext(AppContext)
     
     const handleExpenseSubmit = async (e) => {
         e.preventDefault();
@@ -16,6 +16,8 @@ const ExpenseForm = () => {
             await submitExpenseForm(data);
             const latestExpenses = await getExpenses();
             setExpenses(latestExpenses);
+            const latestBudgetData = await getBudgets()
+            setBudgets(latestBudgetData)
             toggleExpenseModal();
             e.target.reset();
         }

@@ -6,10 +6,10 @@ import ExpenseStatus from '../components/Dashboard/ExpenseStatus'
 import Dashboard from '../components/Dashboard/Dashboard'
 import { Route, Routes } from 'react-router-dom'
 import Expenses from '../components/Dashboard/Expenses'
-import ActiveBudgets from '../components/Budgets/ActiveBudgets'
 import AICoach from '../components/AI/AICoach'
 import BudgetForm from '../components/Budgets/BudgetForm'
 import ExpenseForm from '../components/Expenses/ExpenseForm'
+import BudgetList from '../components/Budgets/BudgetList'
 
 const Main = () => {
   return (
@@ -23,7 +23,7 @@ const Main = () => {
         <Routes>
           <Route path="/" element={<div className="dashboard-grid"><Dashboard /></div>} />
           <Route path="/expenses" element={<Expenses />}/>
-          <Route path="/budgets" element={<ActiveBudgets />}/>
+          <Route path="/budgets" element={<BudgetList />}/>
           <Route path="/aicoach" element={<AICoach />}/>
         </Routes>
       </main>

@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import AppContext from './AppContext'
-import { getExpenseCategories, getExpenses } from '../APIs/api'
+import { getBudgets, getExpenseCategories, getExpenses } from '../APIs/api'
 
 const AppProvider = ({children}) => {
     const [budgetModal, setBudgetModal] = useState(false)
     const [expenseModal, setExpenseModal] = useState(false)
     const [expenseCategories, setExpenseCategories] = useState([])
     const [expenses, setExpenses] = useState([])
+    const [budgets, setBudgets] = useState([])
 
     const toggleBudgetModal = () => {
         setBudgetModal(prev => !prev)
@@ -20,8 +21,10 @@ const AppProvider = ({children}) => {
         const fetchData = async () => {
             const categories = await getExpenseCategories();
             const expensesData = await getExpenses();
+            const budgetData = await getBudgets()
             setExpenseCategories(categories)
             setExpenses(expensesData)
+            setBudgets(budgetData)
         }
 
         fetchData()
@@ -36,7 +39,9 @@ const AppProvider = ({children}) => {
                 expenses,
                 setExpenses,
                 toggleBudgetModal,
-                toggleExpenseModal
+                toggleExpenseModal,
+                budgets,
+                setBudgets
             }}
         >
             {children}
