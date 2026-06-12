@@ -11,8 +11,8 @@ const BudgetForm = () => {
 
         try {
             await submitBudgetForm(data);
-            const latestBudgetData = getBudgets()
-            setBudgets(latestBudgetData)
+            const latestBudgetData = await getBudgets();
+            setBudgets(latestBudgetData);
             toggleBudgetModal();
             e.target.reset();
         }
@@ -20,6 +20,10 @@ const BudgetForm = () => {
             console.error("Budget submit error:", error);
         }
     }
+
+    const today = new Date();
+    today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
+    const formattedDate = today.toISOString().split("T")[0];
     return (
         <div className={budgetModal ? "modal-overlay active" : "modal-overlay"} id="budget-modal">
             <div className="modal-box">
@@ -39,16 +43,19 @@ const BudgetForm = () => {
                         </div>
                         <div className="form-group">
                             <label for="budget-monthly-input">Start Date</label>
-                            <input type="date" name='start_date' id="budget-monthly-input" min="0" required placeholder="Enter monthly limit" />
+                            <input type="date" name='start_date' defaultValue={formattedDate} required placeholder="Enter start date" />
                         </div>
                         <div className="form-group">
                             <label for="budget-monthly-input">End Date</label>
-                            <input type="date" name='end_date' id="budget-monthly-input" min="0" required placeholder="Enter monthly limit" />
+                            <input type="date" name='end_date' defaultValue={formattedDate}  required placeholder="Enter end date" />
                         </div>
                     </div>
                     <div className="modal-footer">
                         <button onClick={toggleBudgetModal} type="button" className="btn btn-secondary" id="cancel-budget-btn">Cancel</button>
-                        <button type="submit" className="btn btn-primary">Update Budgets</button>
+                        <button onClick={() => {
+    console.log(document.querySelector('[name="start_date"]').value);
+    console.log(document.querySelector('[name="end_date"]').value);
+  }} type="submit" className="btn btn-primary">Update Budgets</button>
                     </div>
                 </form>
             </div>

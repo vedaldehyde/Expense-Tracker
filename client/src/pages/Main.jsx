@@ -10,6 +10,7 @@ import AICoach from '../components/AI/AICoach'
 import BudgetForm from '../components/Budgets/BudgetForm'
 import ExpenseForm from '../components/Expenses/ExpenseForm'
 import BudgetList from '../components/Budgets/BudgetList'
+import AddBalance from '../components/Modals/AddBalance'
 
 const Main = () => {
   return (
@@ -29,6 +30,7 @@ const Main = () => {
       </main>
       <BudgetForm />
       <ExpenseForm />
+      <AddBalance/>
     </div>
   )
 }

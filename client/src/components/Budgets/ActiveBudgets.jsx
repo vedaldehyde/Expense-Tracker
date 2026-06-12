@@ -5,11 +5,12 @@ const ActiveBudgets = () => {
     const { budgets } = useContext(AppContext)
     console.log('budget data ', budgets)
 
-    const activeBudget = budgets.find(b => b.status === "ACTIVE");
+    const activeBudget = budgets.find(b => b.status === "ACTIVE") || null;
+    console.log('active budget', activeBudget);
+    
     const nextUpcomingBudget = budgets.filter(b => b.status === "UPCOMING").sort((a, b) => new Date(a.start_date) - new Date(b.start_date))[0];
     const budgetToDisplay = activeBudget || nextUpcomingBudget;
     const progressWidth = Math.min(100, (100 * budgetToDisplay?.spent_amount) / budgetToDisplay?.target_amount)
-    console.log('width ', progressWidth);
     
 
   return (
@@ -21,25 +22,25 @@ const ActiveBudgets = () => {
               </span>
           </div>
           {
-            budgetToDisplay ? <div className="budget-progress-container">
-              <div className="budget-item" id="weekly-budget-item">
-                  <div className="budget-info">
-                      <span className="budget-name">{budgetToDisplay?.budget_name[0].toUpperCase() + budgetToDisplay?.budget_name.substring(1)}</span>
+              budgetToDisplay ? <div className="budget-progress-container">
+                  <div className="budget-item" id="weekly-budget-item">
+                      <div className="budget-info">
+                          <span className="budget-name">{budgetToDisplay?.budget_name[0].toUpperCase() + budgetToDisplay?.budget_name.substring(1)}</span>
+                      </div>
+                      <div className="budget-info">
+                          <div className="budget-name"><h3>Valid till : {budgetToDisplay?.end_date}</h3></div>
+                      </div>
                   </div>
-                  <div className="budget-info">
-                      <div className="budget-name"><h3>Valid till : {budgetToDisplay?.end_date}</h3></div>
+                  <div className="budget-item" id="weekly-budget-item">
+                      <div className="budget-info">
+                          <span className="budget-name">Savings Progress</span>
+                          <span className="budget-amount"><span id="weekly-budget-spent">₹ {budgetToDisplay?.spent_amount}</span> / <span id="weekly-budget-limit">₹ {budgetToDisplay?.target_amount}</span></span>
+                      </div>
+                      <div className="progress-bar-bg">
+                          <div className="progress-bar-fill" style={{ width: `${progressWidth}%` }} id="weekly-budget-progress"></div>
+                      </div>
                   </div>
-              </div>
-              <div className="budget-item" id="weekly-budget-item">
-                  <div className="budget-info">
-                      <span className="budget-name">Savings Progress</span>
-                      <span className="budget-amount"><span id="weekly-budget-spent">₹ {budgetToDisplay?.spent_amount}</span> / <span id="weekly-budget-limit">₹ {budgetToDisplay?.target_amount}</span></span>
-                  </div>
-                  <div className="progress-bar-bg">
-                      <div className="progress-bar-fill" style={{width: `${progressWidth}%`}} id="weekly-budget-progress"></div>
-                  </div>
-              </div>
-          </div> : <p>No new budgets</p>
+              </div> : <p>No new budgets</p>
           }
           
           <div className="budget-footer">

@@ -1268,3 +1268,250 @@ body {
         width: 100%;
     }
 }
+
+/* ==========================================================================
+   SINGLE PAGE VIEW SYSTEM (SPA VIEWPORT SWITCHES)
+   ========================================================================== */
+
+/* Expenses View: Hide other widgets, expand log table */
+body.view-expenses #section-charts-card,
+body.view-expenses #section-budgets-card,
+body.view-expenses #section-ai-card {
+    display: none !important;
+}
+body.view-expenses .dashboard-grid {
+    grid-template-columns: 1fr !important;
+}
+
+/* Budgets View: Hide other widgets, expand budget progress */
+body.view-budgets #section-charts-card,
+body.view-budgets #section-expenses-card,
+body.view-budgets #section-ai-card {
+    display: none !important;
+}
+body.view-budgets .dashboard-grid {
+    grid-template-columns: 1fr !important;
+}
+
+/* AI Insights View: Hide other widgets, expand advice coach */
+body.view-ai-insights #section-charts-card,
+body.view-ai-insights #section-budgets-card,
+body.view-ai-insights #section-expenses-card {
+    display: none !important;
+}
+body.view-ai-insights .dashboard-grid {
+    grid-template-columns: 1fr !important;
+}
+
+/* Recurring View: Hide other widgets, expand recurring card */
+body.view-recurring #section-charts-card,
+body.view-recurring #section-budgets-card,
+body.view-recurring #section-expenses-card,
+body.view-recurring #section-ai-card {
+    display: none !important;
+}
+body.view-recurring #section-recurring-card {
+    display: flex !important;
+}
+body.view-recurring .dashboard-grid {
+    grid-template-columns: 1fr !important;
+}
+
+#section-recurring-card {
+    display: none;
+}
+
+/* Smooth Fade transition for active SPA views */
+body[class*="view-"] .dashboard-card {
+    animation: fadeIn 0.4s ease-out;
+}
+
+/* ==========================================================================
+   COMPONENT: Bank Accounts Capsule Row
+   ========================================================================== */
+.header-accounts-bar {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    overflow-x: auto;
+    padding: 0.25rem 0;
+    max-width: 55%;
+    scrollbar-width: none; /* Firefox */
+}
+
+.header-accounts-bar::-webkit-scrollbar {
+    display: none; /* Safari and Chrome */
+}
+
+.header-account-card {
+    background: var(--bg-card);
+    backdrop-filter: blur(var(--backdrop-blur));
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 0.5rem 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    transition: var(--transition-fast);
+    flex-shrink: 0;
+}
+
+.header-account-card:hover {
+    background: var(--bg-card-hover);
+    border-color: var(--border-hover);
+    transform: translateY(-1px);
+}
+
+.header-account-card.total-balance {
+    border-left: 3px solid var(--primary);
+    background: rgba(99, 102, 241, 0.08);
+}
+
+.account-icon {
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+}
+
+.account-card-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.account-card-name {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.account-card-val {
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.btn-add-balance {
+    background: none;
+    border: none;
+    color: var(--primary);
+    cursor: pointer;
+    padding: 0.2rem;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-fast);
+}
+
+.btn-add-balance:hover {
+    background: rgba(99, 102, 241, 0.15);
+    color: #a78bfa;
+}
+
+/* ==========================================================================
+   COMPONENT: Recurring Monthly Expenses View
+   ========================================================================== */
+.recurring-stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.recurring-stat-mini {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 0.85rem 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.mini-label {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.mini-value {
+    font-size: 1.35rem;
+    font-weight: 700;
+}
+
+.badge-paid {
+    background: rgba(16, 185, 129, 0.12);
+    color: var(--success);
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.badge-unpaid {
+    background: rgba(245, 158, 11, 0.12);
+    color: var(--warning);
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.btn-pay-bill {
+    background: var(--green-gradient);
+    color: white;
+    border: none;
+    padding: 0.35rem 0.65rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.btn-pay-bill:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+}
+
+.btn-pay-bill:disabled {
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text-muted);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Responsive Overrides */
+@media (max-width: 1024px) {
+    .header-accounts-bar {
+        max-width: 100%;
+        width: 100%;
+        margin-top: 0.5rem;
+    }
+}
+
+.action-edit-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 6px;
+    border-radius: var(--radius-sm);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-fast);
+}
+
+.action-edit-btn:hover {
+    color: var(--primary);
+    background: rgba(99, 102, 241, 0.1);
+}
+

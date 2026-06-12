@@ -8,6 +8,11 @@ const AppProvider = ({children}) => {
     const [expenseCategories, setExpenseCategories] = useState([])
     const [expenses, setExpenses] = useState([])
     const [budgets, setBudgets] = useState([])
+    const [addBalance, setAddBalance] = useState(false)
+
+    const toggleBalanceModal = () => {
+        setAddBalance(prev => !prev)
+    }
 
     const toggleBudgetModal = () => {
         setBudgetModal(prev => !prev)
@@ -41,7 +46,9 @@ const AppProvider = ({children}) => {
                 toggleBudgetModal,
                 toggleExpenseModal,
                 budgets,
-                setBudgets
+                setBudgets,
+                toggleBalanceModal,
+                addBalance
             }}
         >
             {children}
