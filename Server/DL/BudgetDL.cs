@@ -20,7 +20,7 @@ namespace DL
                 user_id = Guid.Parse("a54182db-cb26-4f43-abb7-abad3c04e6f5"),
                 start_date = request.start_date,
                 end_date = request.end_date,
-                is_active = request.start_date >= DateTime.Now,
+                is_active = DateTime.Now >= request.start_date && DateTime.Now <= request.end_date,
                 target_amount = request.target_amount
             };
             try

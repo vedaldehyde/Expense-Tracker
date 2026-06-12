@@ -41,12 +41,14 @@ namespace Models
     public class BudgetDetails
     {
         public Guid budget_id { get; set; }
+        public string? budget_name { get; set; }
         public double target_amount { get; set; }
         public DateOnly start_date { get; set; }
         public DateOnly end_date { get; set; }
         public string? status { get; set; }
         public double spent_amount { get; set; }
         public double remaining_amount { get; set; }
-        public string? budget_name { get; set; }
+        public string? is_budget_achieved { get; set; }
+        public string? completion_result { get; set; }
     }
 }
