@@ -12,16 +12,22 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 builder.Services.AddScoped(typeof(ISupabaseRepository<>), typeof(SupabaseRepository<>));
-builder.Services.AddScoped<ICategoriesDL, CategoriesDL>();
-builder.Services.AddScoped<ICategoriesBL, CategoriesBL>();
+
+
 // Register repositories for Expense and Categories so they can be injected into DL classes
 builder.Services.AddScoped(typeof(ISupabaseRepository<Models.Expense>), typeof(Repositories.SupabaseRepository<Models.Expense>));
 builder.Services.AddScoped(typeof(ISupabaseRepository<Models.Categories>), typeof(Repositories.SupabaseRepository<Models.Categories>));
+
+builder.Services.AddScoped<ICategoriesDL, CategoriesDL>();
+builder.Services.AddScoped<ICategoriesBL, CategoriesBL>();
 builder.Services.AddScoped<IExpenseBL, ExpenseBL>();
 builder.Services.AddScoped<IExpenseDL, ExpenseDL>();
 builder.Services.AddScoped<IBudgetBL, BudgetBL>();
 builder.Services.AddScoped<IBudgetDL, BudgetDL>();
+builder.Services.AddScoped<IIncomeBL, IncomeBL>();
+builder.Services.AddScoped<IIncomeDL, IncomeDL>();
 builder.Services.AddScoped<CategoriesBL>();
+
 
 var supabaseUrl = builder.Configuration.GetValue<string>("SupabaseUrl")
     ?? throw new InvalidOperationException("SupabaseUrl is not configured. Set it in appsettings or environment variables.");
