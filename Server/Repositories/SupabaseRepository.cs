@@ -29,7 +29,7 @@ namespace Repositories
             
         }
 
-        public async Task<T?> GetByIdAsync(int id)
+        public async Task<T?> GetByIdAsync(T id)
         {
             var response = await _client
                 .From<T>()
