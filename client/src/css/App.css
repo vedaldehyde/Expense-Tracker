@@ -1515,3 +1515,154 @@ body[class*="view-"] .dashboard-card {
     background: rgba(99, 102, 241, 0.1);
 }
 
+/* ==========================================================================
+   COMPONENT: Dynamic Budget & Savings Goal Enhancements
+   ========================================================================== */
+.budget-header-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.goal-countdown-badge {
+    background: rgba(99, 102, 241, 0.12);
+    color: #a5b4fc;
+    padding: 0.35rem 0.65rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border-radius: var(--radius-sm);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    letter-spacing: 0.2px;
+}
+
+body.light-theme .goal-countdown-badge {
+    background: rgba(99, 102, 241, 0.08);
+    color: var(--primary);
+    border-color: rgba(99, 102, 241, 0.15);
+}
+
+.budget-detail-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+    padding: 0.75rem;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+}
+
+body.light-theme .budget-detail-row {
+    background: rgba(0, 0, 0, 0.01);
+}
+
+.budget-detail-col {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+.budget-detail-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+}
+
+.budget-detail-value {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.budget-highlight-text {
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+/* Modal itemized list styling */
+#modal-recurring-list {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+}
+
+#modal-recurring-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+#modal-recurring-list::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-sm);
+}
+
+.modal-recurring-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+    transition: var(--transition-fast);
+}
+
+.modal-recurring-item:last-child {
+    border-bottom: none;
+}
+
+.modal-recurring-item:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+body.light-theme .modal-recurring-item:hover {
+    background: rgba(0, 0, 0, 0.01);
+}
+
+.modal-rec-item-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+.modal-rec-item-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.modal-rec-item-meta {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+
+.modal-rec-item-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.modal-rec-item-amount {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.modal-rec-delete-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-fast);
+}
+
+.modal-rec-delete-btn:hover {
+    color: var(--danger);
+    background: rgba(239, 68, 68, 0.1);
+}
+
+
+

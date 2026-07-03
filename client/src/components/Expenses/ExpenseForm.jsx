@@ -10,7 +10,7 @@ const ExpenseForm = () => {
 
         const formData = new FormData(e.target);
         const data = Object.fromEntries(formData.entries());
-        console.log('Category id', typeof data.expense_category);
+        console.log('Category id', data.priority_type);
         
         try {
             await submitExpenseForm(data);
@@ -61,8 +61,12 @@ const ExpenseForm = () => {
                                 <input type="date" id="expense-date" name='expense_date'/>
                             </div>
                             <div className="form-group">
-                                <label for="expense_time">Time</label>
-                                <input type="time" id="expense-time" name='expense-time'/>
+                                <label for="expense_time">Priority *</label>
+                                <select id="expense-category" required name='priority_type'>
+                                    <option className='expense-category-cell' value="" selected>Select Priority</option>
+                                    <option className='expense-category-cell' value="normal">Normal</option>
+                                    <option className='expense-category-cell' value="emergency">Emergency</option>
+                                </select>
                             </div>
                         </div>
 

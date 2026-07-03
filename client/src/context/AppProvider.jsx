@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import AppContext from './AppContext'
-import { getBudgets, getExpenseCategories, getExpenses } from '../APIs/api'
+import { getBudgets, getExpenseCategories, getExpenses, getIncomes } from '../APIs/api'
 
 const AppProvider = ({children}) => {
     const [budgetModal, setBudgetModal] = useState(false)
@@ -8,7 +8,9 @@ const AppProvider = ({children}) => {
     const [expenseCategories, setExpenseCategories] = useState([])
     const [expenses, setExpenses] = useState([])
     const [budgets, setBudgets] = useState([])
+    const [incomes, setIncomes] = useState({incomesList: [], total_balance: 0})
     const [addBalance, setAddBalance] = useState(false)
+    const [selectedAccount, setSelectedAccount] = useState('')
 
     const toggleBalanceModal = () => {
         setAddBalance(prev => !prev)
@@ -27,9 +29,11 @@ const AppProvider = ({children}) => {
             const categories = await getExpenseCategories();
             const expensesData = await getExpenses();
             const budgetData = await getBudgets()
+            const incomesData = await getIncomes()
             setExpenseCategories(categories)
             setExpenses(expensesData)
             setBudgets(budgetData)
+            setIncomes(incomesData)
         }
 
         fetchData()
@@ -48,7 +52,12 @@ const AppProvider = ({children}) => {
                 budgets,
                 setBudgets,
                 toggleBalanceModal,
-                addBalance
+                addBalance,
+                setIncomes,
+                getIncomes,
+                incomes,
+                selectedAccount, 
+                setSelectedAccount
             }}
         >
             {children}

@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react'
 import AppContext from '../../context/AppContext'
 
 const DashboardHeader = () => {
-    const { toggleBudgetModal, toggleExpenseModal, toggleBalanceModal } = useContext(AppContext)
+    const { toggleBudgetModal, toggleExpenseModal, toggleBalanceModal, incomes } = useContext(AppContext)
     return (
         <header class="dashboard-header">
             <div class="header-title-wrapper">
@@ -14,7 +14,7 @@ const DashboardHeader = () => {
                     <span class="account-icon">💰</span>
                     <div class="account-card-info">
                         <span class="account-card-name">Total Balance</span>
-                        <span class="account-card-val" id="header-total-balance">10,00,000</span>
+                        <span class="account-card-val" id="header-total-balance">₹ {incomes.total_balance.toLocaleString('en-IN')}</span>
                     </div>
                     <button class="btn-add-balance" onClick={toggleBalanceModal} title="Add Balance">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -23,6 +23,24 @@ const DashboardHeader = () => {
                         </svg>
                     </button>
                 </div>
+                {
+                    incomes.incomesList ?
+                    incomes?.incomesList.map(income => (
+                        <div class="header-account-card total-balance">
+                            <span class="account-icon">💰</span>
+                            <div class="account-card-info">
+                                <span class="account-card-name">{income.source}</span>
+                                <span class="account-card-val" id="header-total-balance">₹ {income.balance.toLocaleString('en-IN')}</span>
+                            </div>
+                            <button class="btn-add-balance" onClick={toggleBalanceModal} title="Add Balance">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                            </button>
+                        </div>
+                    )): null
+                }
             </div>
             <div class="header-actions">
                 <button onClick={toggleBudgetModal} class="btn btn-secondary" id="open-budget-modal-btn">
