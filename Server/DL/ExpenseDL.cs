@@ -30,7 +30,8 @@ namespace DL
                 description = request.description,
                 amount = request.amount,
                 payment_method = request.payment_method,
-                transaction_date = DateTime.Now
+                transaction_date = DateTime.Now,
+                priority = request.priority
             };
             try
             {

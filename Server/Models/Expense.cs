@@ -30,6 +30,9 @@ namespace Models
 
         [Postgrest.Attributes.Column("payment_method")]
         public string? payment_method { get; set; }
+
+        [Postgrest.Attributes.Column("priority")]
+        public string? priority { get; set; }
     }
 
     public class ExpenseRequest
@@ -38,6 +41,7 @@ namespace Models
         public string? title { get; set; }
         public double? amount { get; set; }
         public string? category { get; set; }
+        public string? priority { get; set; }
         public string? description { get; set; }
         public string? payment_method { get; set; }
         public DateTime date { get; set; }
