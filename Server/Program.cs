@@ -18,6 +18,8 @@ builder.Services.AddScoped(typeof(ISupabaseRepository<>), typeof(SupabaseReposit
 builder.Services.AddScoped(typeof(ISupabaseRepository<Models.Expense>), typeof(Repositories.SupabaseRepository<Models.Expense>));
 builder.Services.AddScoped(typeof(ISupabaseRepository<Models.Categories>), typeof(Repositories.SupabaseRepository<Models.Categories>));
 
+builder.Services.AddScoped<ISavingsHistoryBL, SavingsHistoryBL>();
+builder.Services.AddScoped<ISavingsHistoryDL, SavingsHistoryDL>();
 builder.Services.AddScoped<ICategoriesDL, CategoriesDL>();
 builder.Services.AddScoped<ICategoriesBL, CategoriesBL>();
 builder.Services.AddScoped<IExpenseBL, ExpenseBL>();
@@ -26,6 +28,8 @@ builder.Services.AddScoped<IBudgetBL, BudgetBL>();
 builder.Services.AddScoped<IBudgetDL, BudgetDL>();
 builder.Services.AddScoped<IIncomeBL, IncomeBL>();
 builder.Services.AddScoped<IIncomeDL, IncomeDL>();
+builder.Services.AddScoped<IFixedExpenseBL, FixedExpenseBL>();
+builder.Services.AddScoped<IFixedExpenseDL, FixedExpenseDL>();
 builder.Services.AddScoped<CategoriesBL>();
 
 

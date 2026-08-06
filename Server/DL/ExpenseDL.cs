@@ -31,7 +31,8 @@ namespace DL
                 amount = request.amount,
                 payment_method = request.payment_method,
                 transaction_date = DateTime.Now,
-                priority = request.priority
+                priority = request.priority,
+                income_id = request.income_id
             };
             try
             {

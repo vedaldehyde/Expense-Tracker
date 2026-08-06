@@ -22,7 +22,8 @@ namespace DL
                     id = Guid.NewGuid(),
                     source = request.source,
                     balance = request.balance,
-                    updated_at = DateTime.Now
+                    updated_at = DateTime.Now,
+                    is_salary = request.isSalary
                 };
                 await _supabaseRepository.CreateAsync(income);
             }
@@ -40,7 +41,9 @@ namespace DL
             {
                 id = x.id,
                 balance = x.balance,
-                source = x.source
+                source = x.source,
+                isSalary = x.is_salary
+
             }).ToList();
 
             double totalBalance = Convert.ToDouble(incomes.Sum(x => x.balance));

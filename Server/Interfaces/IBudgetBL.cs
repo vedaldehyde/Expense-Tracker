@@ -6,5 +6,6 @@ namespace Interfaces
     {
         Task CreateBudgetAsync(BudgetRequest request);
         Task<List<BudgetDetails>> GetBudgetsAsync();
+        Task ProcessBudgetAfterExpense(Guid incomeId);
     }
 }

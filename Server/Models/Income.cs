@@ -14,6 +14,9 @@ namespace Models
         [Column("balance")]
         public double? balance { get; set; }
 
+        [Column("is_salary")]
+        public bool is_salary { get; set; }
+
         [Column("updated_at")]
         public DateTime? updated_at { get; set; }
 
@@ -24,6 +27,7 @@ namespace Models
         public Guid id { get; set; }
         public string? source { get; set; }
         public double? balance { get; set; }
+        public bool isSalary { get; set; }
     }
 
     public class Incomes
@@ -31,6 +35,7 @@ namespace Models
         public Guid id { get; set; }
         public string? source { get; set; }
         public double? balance { get; set; }
+        public bool isSalary { get; set; }
     }
     
     public class IncomeResponse

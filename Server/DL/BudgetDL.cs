@@ -11,26 +11,25 @@ namespace DL
             _supabaseRepository = supabaseRepository;
         }
 
-        public async Task CreateBudgetInDB(BudgetRequest request)
+        public async Task<Guid> CreateBudgetInDB(Budget budget)
         {
-            var budget = new Budget
-            {
-                budget_name = request.budget_name,
-                id = Guid.NewGuid(),
-                user_id = Guid.Parse("a54182db-cb26-4f43-abb7-abad3c04e6f5"),
-                start_date = request.start_date,
-                end_date = request.end_date,
-                is_active = DateTime.Now >= request.start_date && DateTime.Now <= request.end_date,
-                target_amount = request.target_amount
-            };
-            try
-            {
-                await _supabaseRepository.CreateAsync(budget);
-            }
-            catch (Exception e)
-            {
-               System.Console.WriteLine(e.Message.ToString());
-            }
+            var result = await _supabaseRepository.ExecuteFunctionAsync<BudgetIdResponse>(
+                "create_budget",
+                new Dictionary<string, object>
+                {
+                    { "p_user_id", budget.user_id },
+                    { "p_budget_name", budget.budget_name ?? string.Empty },
+                    { "p_budget_type", budget.budget_type ?? string.Empty},
+                    { "p_frequency", budget.frequency ?? string.Empty},
+                    { "p_start_date", budget.start_date },
+                    { "p_end_date", budget.end_date },
+                    { "p_target_amount", budget.target_amount },
+                    { "p_income_id", budget.income_id },
+                    { "p_variable_expense", budget.variable_expense },
+                    { "p_budget_amount", budget.budget_amount }
+                });
+
+            return result.First().Id;
         }
 
         public async Task<List<BudgetDetails>> GetBudgetsFromDB()
@@ -41,6 +40,14 @@ namespace DL
             };
             var list = await _supabaseRepository.ExecuteFunctionAsync<BudgetDetails>("get_budget_dashboard", parameters);
             return list ?? new List<BudgetDetails>();
+        }
+
+        public async Task UpdateBudgetSavingsStatus(Guid budgetId)
+        {
+            await _supabaseRepository.ExecuteFunctionAsync<object>("update_budget_savings_status",new Dictionary<string, object>
+            {
+                {"p_budget_id",budgetId}
+            });    
         }
     }
 }
