@@ -3,34 +3,9 @@ import React from 'react'
 const FixedExpenses = () => {
   return (
       <>
-          <div
-              className="form-group"
-              style={{
-                  marginTop: "1.25rem",
-                  borderTop: "1px solid var(--border-color)",
-                  paddingTop: "1.25rem",
-              }}
-          >
-              <label
-                  style={{
-                      marginBottom: "0.5rem",
-                      display: "block",
-                  }}
-              >
-                  Fixed Expenditures & Monthly Bills
-              </label>
-
-              <div
-                  id="modal-recurring-list"
-                  style={{
-                      marginBottom: "0.75rem",
-                      border: "1px solid var(--border-color)",
-                      borderRadius: "var(--radius-sm)",
-                      padding: "0.5rem",
-                      maxHeight: "150px",
-                      overflowY: "auto",
-                  }}
-              >
+          <div className="form-group" style={{ marginTop: "1.25rem", borderTop: "1px solid var(--border-color)", paddingTop: "1.25rem",}}>
+              <label style={{ marginBottom: "0.5rem", display: "block",}}>Fixed Expenditures & Monthly Bills</label>
+              <div id="modal-recurring-list" style={{ marginBottom: "0.75rem", border: "1px solid var(--border-color)", borderRadius: "var(--radius-sm)", padding: "0.5rem", maxHeight: "150px", overflowY: "auto",}}>
                   {/* Recurring bills listed dynamically here */}
               </div>
 

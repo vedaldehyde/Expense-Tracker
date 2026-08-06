@@ -9,8 +9,10 @@ const BudgetList = () => {
         COMPLETED: 3
     };
 
+    console.log('budget data ',budgets);
+    
     const sortedBudgets = budgets.sort((a, b) => {
-        return statusPriority[a.status] - statusPriority[b.status];
+        return statusPriority[a.budget_status.toUpperCase()] - statusPriority[b.budget_status.toUpperCase()];
     });
     return (
         <section className="dashboard-card card-expenses" id="section-expenses-card">
@@ -52,19 +54,24 @@ const BudgetList = () => {
                     <thead>
                         <tr>
                             <th>Budget Name</th>
-                            <th>Target Amount</th>
-                            <th>Spent Amount</th>
+                            <th>Budget Type</th>
+                            <th>Frequency</th>
+                            <th>Source</th>
                             <th>Start Date</th>
                             <th>End Date</th>
+                            <th>Budget Amount</th>
+                            <th>Spent Amount</th>
+                            <th>Remaining Amount</th>                
+                            <th>Saved Amount</th>                
                             <th>Status</th>
-                            <th>Target Acieved</th>
+                            <th>Budget Health</th>
                             <th>Action</th>
                         </tr>
                     </thead>
                     <tbody id="expense-list-tbody">
                         {
                           !budgets ? <tr>
-                              <td colspan="5" class="table-empty-state">
+                              <td colspan="5" className="table-empty-state">
                                   No transactions found matches your filters.
                               </td>
                           </tr> :
@@ -77,15 +84,28 @@ const BudgetList = () => {
                                         </div>
                                     </td>
                                     <td>
-                                        <div className="expense-title-desc">
-                                            <span className="expense-title-name">₹ {budget.target_amount}</span>
+                                        <div className="expense-category-cell">
+                                            <span className="category-badge-name">{budget.budget_type}</span>
                                         </div>
                                     </td>
-                                    <td className="expense-amount-cell">₹ {budget.spent_amount}</td>
+                                    <td>
+                                        <div className="expense-category-cell">
+                                            <span className="category-badge-name">{budget.frequency}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div className="expense-title-desc">
+                                            <span className="expense-title-name">{budget.income_source}</span>
+                                        </div>
+                                    </td>
                                     <td><span className="expense-title-name">{`${new Date(budget.start_date).getDate()}  ${new Date(budget.start_date).toLocaleString('en-US', { month: 'long' })}  ${new Date(budget.start_date).getFullYear()}`}</span></td>
                                     <td><span className="expense-title-name">{`${new Date(budget.end_date).getDate()}  ${new Date(budget.end_date).toLocaleString('en-US', { month: 'long' })}  ${new Date(budget.end_date).getFullYear()}`}</span></td>
-                                    <td className="expense-amount-cell" style={{color: budget.status === 'ACTIVE' ? '#10b981' : budget.status === 'COMPLETED' ? '#9c88ff' : 'white'}}>{budget.status}</td>
-                                    <td className="expense-amount-cell" style={{color: budget.completion_result==='ACHIEVED' ? '#4cd137' : '#e84118'}}>{budget.completion_result}</td>
+                                    <td className="expense-amount-cell">₹ {budget.budget_amount}</td>
+                                    <td className="expense-amount-cell">₹ {budget.spent_amount}</td>
+                                    <td className="expense-amount-cell">₹ {budget.remaining_amount}</td>
+                                    <td className="expense-amount-cell">₹ {budget.saved_amount}</td>
+                                    <td className="expense-amount-cell" style={{color: budget.budget_status.toUpperCase() === 'ACTIVE' ? '#10b981' : budget.budget_status.toUpperCase() === 'COMPLETED' ? '#9c88ff' : 'white'}}>{budget.budget_status.toUpperCase()}</td>
+                                    {/* <td className="expense-amount-cell" style={{color: budget.target_achieved ==='on_track' ? '#4cd137' : budget.target_achieved === 'not_started' ? 'white' : '#ef4444'}}>{budget.target_achieved.split('_')}</td> */}
                                     <td>
                                         <button className="action-delete-btn" data-id="" title="Delete Transaction">
                                             <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg>

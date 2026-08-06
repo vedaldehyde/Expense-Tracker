@@ -1,16 +1,20 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import AppContext from '../../context/AppContext'
 import { getBudgets, getExpenses, submitExpenseForm } from '../../APIs/api'
 
 const ExpenseForm = () => {
-    const { expenseModal, toggleExpenseModal, expenseCategories, setExpenses, setBudgets } = useContext(AppContext)
+    const [incomeId, setIncomeId] = useState("")
+    const { expenseModal, toggleExpenseModal, expenseCategories, setExpenses, setBudgets, incomes, budgets } = useContext(AppContext)
+    const activeBudgets = budgets.filter(budget => budget.is_active)
+    const hasActiveBudget = activeBudgets.some(budget => budget.income_id === incomeId);
+   
     
     const handleExpenseSubmit = async (e) => {
         e.preventDefault();
 
         const formData = new FormData(e.target);
         const data = Object.fromEntries(formData.entries());
-        console.log('Category id', data.priority_type);
+        
         
         try {
             await submitExpenseForm(data);
@@ -46,8 +50,8 @@ const ExpenseForm = () => {
                             </div>
                             <div className="form-group">
                                 <label for="expense-category">Category *</label>
-                                <select id="expense-category" required name='expense_category'>
-                                    <option className='expense-category-cell' value="" disabled selected>Select category</option>
+                                <select id="expense-category" className="select-field" required name='expense_category'>
+                                    <option value="" selected>Select category</option>
                                     {
                                         expenseCategories.map(category => <option className='expense-category-cell' value={category.id}>{category.category_type}</option>)
                                     }
@@ -62,11 +66,20 @@ const ExpenseForm = () => {
                             </div>
                             <div className="form-group">
                                 <label for="expense_time">Priority *</label>
-                                <select id="expense-category" required name='priority_type'>
+                                <select id="expense-category" className="select-field" required name='priority_type'>
                                     <option className='expense-category-cell' value="" selected>Select Priority</option>
                                     <option className='expense-category-cell' value="normal">Normal</option>
                                     <option className='expense-category-cell' value="emergency">Emergency</option>
                                 </select>
+                            </div>
+                            <div className="form-group">
+                                <label for="expense_time">Income Source *</label>
+                                <select id="budget-period-select" className="select-field" style={{ paddingLeft: '1rem' }} name="income_source" onChange={(e) => setIncomeId(e.target.value)}>
+                                    {
+                                        incomes.incomesList ? incomes?.incomesList.map(income => <option key={income.id} value={income.id}>{income.source}</option>) : null
+                                    }
+                                </select>
+                                {hasActiveBudget && <span className="expense-desc-text" style={{color: "#ef4444"}}>You already have a budget set on this account</span>}
                             </div>
                         </div>
 

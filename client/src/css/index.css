@@ -1006,6 +1006,19 @@ body {
     overflow: hidden;
     transform: translateY(20px);
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* Ensure modal fits screen height and flexes layout */
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-box form {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+    min-height: 0;
 }
 
 .modal-overlay.active .modal-box {
@@ -1044,6 +1057,26 @@ body {
 
 .modal-body {
     padding: 1.5rem;
+    overflow-y: auto;
+    flex: 1;
+    min-height: 0;
+    
+    /* Custom premium scrollbar */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+}
+
+.modal-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-sm);
+}
+
+body.light-theme .modal-body::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.15);
 }
 
 .form-group {
@@ -1664,5 +1697,139 @@ body.light-theme .modal-recurring-item:hover {
     background: rgba(239, 68, 68, 0.1);
 }
 
+/* Savings Goal Recommendation Card styling */
+.savings-recommendation-card {
+    background: rgba(99, 102, 241, 0.06);
+    border: 1px solid rgba(99, 102, 241, 0.15);
+    border-radius: var(--radius-md);
+    padding: 0.85rem 1rem;
+    margin-top: 1rem;
+    align-items: flex-start;
+    gap: 0.75rem;
+    animation: fadeIn 0.3s ease-out;
+}
+
+body.light-theme .savings-recommendation-card {
+    background: rgba(99, 102, 241, 0.04);
+    border-color: rgba(99, 102, 241, 0.12);
+}
+
+.savings-recommendation-icon {
+    font-size: 1.2rem;
+    line-height: 1;
+    color: var(--primary);
+}
+
+.savings-recommendation-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    width: 100%;
+}
+
+.savings-recommendation-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--primary);
+}
+
+.savings-recommendation-text {
+    font-size: 0.85rem;
+    line-height: 1.4;
+    color: var(--text-primary);
+}
+
+.savings-recommendation-text strong {
+    color: var(--success);
+    font-weight: 700;
+}
+
+/* Dynamic Savings Recommendation Options list */
+.recommendation-option {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-color);
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+body.light-theme .recommendation-option {
+    background: rgba(0, 0, 0, 0.01);
+}
+
+.recommendation-option:hover {
+    background: rgba(99, 102, 241, 0.08);
+    border-color: rgba(99, 102, 241, 0.3);
+}
+
+.recommendation-option.selected {
+    background: rgba(16, 185, 129, 0.08);
+    border-color: var(--success);
+}
+
+body.light-theme .recommendation-option.selected {
+    background: rgba(16, 185, 129, 0.04);
+}
+
+.recommendation-option .option-label {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    transition: var(--transition-fast);
+}
+
+.recommendation-option.selected .option-label {
+    color: var(--text-primary);
+}
+
+.recommendation-option .option-value {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    transition: var(--transition-fast);
+}
+
+.recommendation-option.selected .option-value {
+    color: var(--success);
+}
+
+/* Broader Budget Modal Styling */
+#budget-modal .modal-box {
+    max-width: 850px;
+    width: 95%;
+}
+
+.budget-modal-grid {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 1.75rem;
+    align-items: start;
+}
+
+.budget-modal-left {
+    display: flex;
+    flex-direction: column;
+}
+
+.budget-modal-right {
+    display: flex;
+    flex-direction: column;
+}
+
+@media (max-width: 768px) {
+    .budget-modal-grid {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+    }
+    #budget-modal .modal-box {
+        max-width: 500px;
+    }
+}
 
 

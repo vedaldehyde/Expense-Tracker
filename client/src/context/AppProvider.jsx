@@ -57,7 +57,7 @@ const AppProvider = ({children}) => {
                 getIncomes,
                 incomes,
                 selectedAccount, 
-                setSelectedAccount
+                setSelectedAccount,
             }}
         >
             {children}

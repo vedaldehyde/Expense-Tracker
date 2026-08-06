@@ -5,12 +5,13 @@ const ActiveBudgets = () => {
     const { budgets } = useContext(AppContext)
     console.log('budget data ', budgets)
 
-    const activeBudget = budgets.find(b => b.status === "ACTIVE") || null;
-    console.log('active budget', activeBudget);
+    const activeBudget = budgets.find(b => b.budget_status.toUpperCase() === "ACTIVE") || null;
     
-    const nextUpcomingBudget = budgets.filter(b => b.status === "UPCOMING").sort((a, b) => new Date(a.start_date) - new Date(b.start_date))[0];
-    const budgetToDisplay = activeBudget || nextUpcomingBudget;
-    const progressWidth = Math.min(100, (100 * budgetToDisplay?.spent_amount) / budgetToDisplay?.target_amount)
+    const nextUpcomingBudget = budgets.filter(b => b.budget_status.toUpperCase() === "UPCOMING").sort((a, b) => new Date(a.start_date) - new Date(b.start_date))[0];
+    console.log(activeBudget);
+    
+    const budgetToDisplay = activeBudget && activeBudget.spent_amount <= activeBudget.budget_amount ? activeBudget : nextUpcomingBudget
+    const progressWidth = Math.min(100, (100 * budgetToDisplay?.spent_amount) / budgetToDisplay?.budget_amount)
     
 
   return (
@@ -34,7 +35,7 @@ const ActiveBudgets = () => {
                   <div className="budget-item" id="weekly-budget-item">
                       <div className="budget-info">
                           <span className="budget-name">Savings Progress</span>
-                          <span className="budget-amount"><span id="weekly-budget-spent">₹ {budgetToDisplay?.spent_amount}</span> / <span id="weekly-budget-limit">₹ {budgetToDisplay?.target_amount}</span></span>
+                          <span className="budget-amount"><span id="weekly-budget-spent">₹ {budgetToDisplay?.spent_amount}</span> / <span id="weekly-budget-limit">₹ {budgetToDisplay?.budget_amount}</span></span>
                       </div>
                       <div className="progress-bar-bg">
                           <div className="progress-bar-fill" style={{ width: `${progressWidth}%` }} id="weekly-budget-progress"></div>

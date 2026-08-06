@@ -4,12 +4,11 @@ import { getIncomes, submitIncomeForm, updateIncomeForm } from '../../APIs/api'
 
 const AddBalance = () => {
     const { addBalance, toggleBalanceModal, setIncomes, incomes, selectedAccount, setSelectedAccount } = useContext(AppContext)
-    
     const handleBalanceSubmit = async (e) => {
         e.preventDefault();
         const formData = new FormData(e.target);
         const data = Object.fromEntries(formData.entries());
-        console.log('income form entries ',data);
+        console.log(data);
         
         try {
 
@@ -29,6 +28,8 @@ const AddBalance = () => {
             console.error("Budget submit error:", error);
         }
     }
+
+    
 
     return (
         <div className={addBalance ? "modal-overlay active" : "modal-overlay"} id="balance-modal">
@@ -60,6 +61,14 @@ const AddBalance = () => {
                         <div className="form-group">
                             <label htmlFor="balance-amount-input">Amount to Add (₹) *</label>
                             <input type="number" id="balance-amount-input" name="balance" min="0.01" step="0.01" required placeholder="0.00" />
+                        </div>
+                        <div className="form-group">
+                            <label htmlFor="balance-amount-input">Salary Account *</label>
+                            {/* <input type="number" id="balance-amount-input" name="balance" min="0.01" step="0.01" required placeholder="0.00" /> */}
+                            <select name="is_salary" id="" className="select-field">
+                                <option value={true}>Yes</option>
+                                <option value={false}>No</option>
+                            </select>
                         </div>
                     </div>
                     <div className="modal-footer">
