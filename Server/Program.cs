@@ -91,14 +91,11 @@ builder.Services.AddScoped<Supabase.Client>(_ => new Supabase.Client(
 ));
 
 // Register CORS so frontend can access the API. Configure origins via appsettings or environment variable "AllowedOrigins" (semicolon-separated), default to http://localhost:3000.
-var allowedOrigins = builder.Configuration.GetValue<string>("AllowedOrigins")?.Split(';', StringSplitOptions.RemoveEmptyEntries)
-    ?? new[] { "http://localhost:3000" };
-
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins(allowedOrigins)
+        policy.SetIsOriginAllowed(_ => true)
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
