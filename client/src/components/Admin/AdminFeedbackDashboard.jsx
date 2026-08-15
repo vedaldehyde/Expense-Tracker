@@ -17,7 +17,7 @@ const AdminFeedbackDashboard = () => {
     const [adminNotes, setAdminNotes] = useState('');
     const [submitting, setSubmitting] = useState(false);
 
-    const fetchFeedbacks = async () => {
+    const fetchFeedbacks = React.useCallback(async () => {
         setLoading(true);
         try {
             const data = await getAllFeedbackAdmin();
@@ -28,11 +28,11 @@ const AdminFeedbackDashboard = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [showToast]);
 
     useEffect(() => {
         fetchFeedbacks();
-    }, []);
+    }, [fetchFeedbacks]);
 
     const handleOpenRespondModal = (fb) => {
         setSelectedFeedback(fb);
