@@ -114,7 +114,10 @@ if (app.Environment.IsDevelopment())
 // Enable CORS policy
 app.UseCors("AllowFrontend");
 
-app.UseHttpsRedirection();
+if (app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 
 var summaries = new[]
 {
