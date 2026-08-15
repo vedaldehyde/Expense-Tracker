@@ -47,18 +47,11 @@ body.light-theme {
 /* ==========================================================================
    RESET & BASE STYLES
    ========================================================================== */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif;
-    -webkit-font-smoothing: antialiased;
-}
-
-body {
+.auth-page-wrapper {
     background-color: var(--bg-main);
     color: var(--text-primary);
     min-height: 100vh;
+    width: 100vw;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -100,8 +93,8 @@ body.light-theme .bg-glow-2 {
    AUTH LAYOUT CARD
    ========================================================================== */
 .auth-container {
-    width: 100%;
-    max-width: 440px;
+    width: 450px;
+    max-width: 95vw;
     animation: authFadeIn 0.5s ease;
 }
 
@@ -249,7 +242,7 @@ body.light-theme .auth-tabs {
     background: rgba(255, 255, 255, 0.02);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-md);
-    padding: 0.75rem 2.5rem 0.75rem 2.6rem;
+    padding: 0.75rem 2.5rem 0.75rem 3rem !important;
     color: var(--text-primary);
     font-size: 0.95rem;
     outline: none;
@@ -438,4 +431,14 @@ body.light-theme .social-btn:hover {
     0%, 100% { transform: translateX(0); }
     20%, 60% { transform: translateX(-4px); }
     40%, 80% { transform: translateX(4px); }
+}
+
+@media (max-width: 480px) {
+    .auth-card {
+        padding: 1.75rem 1.25rem !important;
+    }
+    .social-buttons {
+        grid-template-columns: 1fr !important;
+        gap: 0.65rem !important;
+    }
 }

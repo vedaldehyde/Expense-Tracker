@@ -1704,7 +1704,7 @@ body.light-theme .modal-recurring-item:hover {
     border-radius: var(--radius-md);
     padding: 0.85rem 1rem;
     margin-top: 1rem;
-    display: none; /* Controlled via JS */
+    display: flex;
     align-items: flex-start;
     gap: 0.75rem;
     animation: fadeIn 0.3s ease-out;
@@ -1798,6 +1798,179 @@ body.light-theme .recommendation-option.selected {
 
 .recommendation-option.selected .option-value {
     color: var(--success);
+}
+
+/* Active Savings Pace Recommendation Styling */
+.savings-pace-container {
+    background: rgba(99, 102, 241, 0.05);
+    border: 1px solid rgba(99, 102, 241, 0.15);
+    border-radius: var(--radius-sm);
+    padding: 0.65rem 0.85rem;
+    margin-top: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+body.light-theme .savings-pace-container {
+    background: rgba(99, 102, 241, 0.03);
+    border-color: rgba(99, 102, 241, 0.12);
+}
+
+.savings-pace-header {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--primary);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.savings-pace-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.4rem;
+}
+
+.savings-pace-item {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 0.35rem 0.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+body.light-theme .savings-pace-item {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+.savings-pace-label {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.savings-pace-val {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+/* Salary Budget Allocation Summary styling */
+.salary-summary-card {
+    background: rgba(16, 185, 129, 0.05);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    border-radius: var(--radius-sm);
+    padding: 0.75rem 0.9rem;
+    margin-top: 0.6rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    animation: fadeIn 0.3s ease-out;
+}
+
+body.light-theme .salary-summary-card {
+    background: rgba(16, 185, 129, 0.03);
+    border-color: rgba(16, 185, 129, 0.15);
+}
+
+.salary-summary-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.73rem;
+    font-weight: 700;
+    color: var(--success);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.salary-summary-badge {
+    background: rgba(16, 185, 129, 0.15);
+    color: var(--success);
+    padding: 0.15rem 0.45rem;
+    border-radius: 12px;
+    font-size: 0.65rem;
+    font-weight: 700;
+}
+
+.salary-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+}
+
+.salary-summary-item {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 0.4rem 0.55rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+body.light-theme .salary-summary-item {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+.salary-summary-label {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.salary-summary-val {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+/* Priority Selector Button Group in Expense Modal */
+.priority-selector-group {
+    display: flex;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.priority-btn {
+    flex: 1;
+    padding: 0.55rem 0.75rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    transition: var(--transition-fast);
+}
+
+.priority-btn:hover {
+    border-color: var(--primary);
+    color: var(--text-primary);
+}
+
+.priority-btn.active.normal {
+    background: rgba(16, 185, 129, 0.12);
+    border-color: var(--success);
+    color: var(--success);
+}
+
+.priority-btn.active.emergency {
+    background: rgba(239, 68, 68, 0.12);
+    border-color: var(--danger);
+    color: var(--danger);
 }
 
 /* Broader Budget Modal Styling */

@@ -12,5 +12,10 @@ Server/obj/
 # env
 .env
 
+# .NET Secrets
+Server/appsettings.Development.json
+Server/appsettings.Production.json
+Server/appsettings.local.json
+
 # mac
 .DS_Store

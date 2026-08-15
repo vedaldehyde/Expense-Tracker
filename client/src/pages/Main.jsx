@@ -11,6 +11,10 @@ import BudgetForm from '../components/Budgets/BudgetForm'
 import ExpenseForm from '../components/Expenses/ExpenseForm'
 import BudgetList from '../components/Budgets/BudgetList'
 import AddBalance from '../components/Modals/AddBalance'
+import AddSavingsModal from '../components/Budgets/AddSavingsModal'
+import TransferMoneyModal from '../components/Modals/TransferMoneyModal'
+import FeedbackModal from '../components/Modals/FeedbackModal'
+import AdminFeedbackDashboard from '../components/Admin/AdminFeedbackDashboard'
 
 const Main = () => {
   return (
@@ -26,11 +30,15 @@ const Main = () => {
           <Route path="/expenses" element={<Expenses />}/>
           <Route path="/budgets" element={<BudgetList />}/>
           <Route path="/aicoach" element={<AICoach />}/>
+          <Route path="/admin/feedback" element={<AdminFeedbackDashboard />}/>
         </Routes>
       </main>
       <BudgetForm />
       <ExpenseForm />
-      <AddBalance/>
+      <AddBalance />
+      <AddSavingsModal />
+      <TransferMoneyModal />
+      <FeedbackModal />
     </div>
   )
 }

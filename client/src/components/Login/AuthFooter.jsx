@@ -25,7 +25,7 @@ const AuthFooter = () => {
             </button>
         </div>
         <div className="auth-footer">
-            <p id="auth-footer-text">Don't have an account? <a href="#" id="auth-switch-link">Sign up</a></p>
+            <p id="auth-footer-text">By continuing, you agree to SpendWise AI's terms and privacy policy.</p>
         </div>
     </>
   )
