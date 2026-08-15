@@ -9,5 +9,6 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 EXPOSE 8080
 ENV ASPNETCORE_URLS=http://+:8080
+ENV DOTNET_USE_POLLING_FILE_WATCHER=true
 COPY --from=build /app/publish .
 ENTRYPOINT ["dotnet", "Server.dll"]
