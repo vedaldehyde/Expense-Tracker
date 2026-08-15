@@ -4,8 +4,8 @@ namespace Interfaces
 {
     public interface IBudgetBL
     {
-        Task CreateBudgetAsync(BudgetRequest request);
-        Task<List<BudgetDetails>> GetBudgetsAsync();
-        Task ProcessBudgetAfterExpense(Guid incomeId);
+        Task CreateBudgetAsync(Guid userId, BudgetRequest request);
+        Task<List<BudgetDetails>> GetBudgetsAsync(Guid userId);
+        Task ProcessBudgetAfterExpense(Guid userId, Guid incomeId);
     }
 }

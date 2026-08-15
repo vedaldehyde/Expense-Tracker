@@ -3,20 +3,56 @@ using DL;
 using Interfaces;
 using Repositories;
 using Supabase;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configure JWT Authentication
+var jwtSettings = builder.Configuration.GetSection("JwtSettings");
+var secretKey = jwtSettings["Secret"] ?? "SpendWiseSuperSecretJWTSigningKeyKey123!!!";
+var key = Encoding.UTF8.GetBytes(secretKey);
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtSettings["Issuer"] ?? "SpendWiseServer",
+        ValidAudience = jwtSettings["Audience"] ?? "SpendWiseClient",
+        IssuerSigningKey = new SymmetricSecurityKey(key)
+    };
+});
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNamingPolicy = null;
+        options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+    });
 builder.Services.AddScoped(typeof(ISupabaseRepository<>), typeof(SupabaseRepository<>));
 
 
-// Register repositories for Expense and Categories so they can be injected into DL classes
+// Register repositories for Expense, Categories, Budget, and SavingsHistory so they can be injected into DL classes
 builder.Services.AddScoped(typeof(ISupabaseRepository<Models.Expense>), typeof(Repositories.SupabaseRepository<Models.Expense>));
 builder.Services.AddScoped(typeof(ISupabaseRepository<Models.Categories>), typeof(Repositories.SupabaseRepository<Models.Categories>));
+builder.Services.AddScoped(typeof(ISupabaseRepository<Models.Budget>), typeof(Repositories.SupabaseRepository<Models.Budget>));
+builder.Services.AddScoped(typeof(ISupabaseRepository<Models.SavingsHistory>), typeof(Repositories.SupabaseRepository<Models.SavingsHistory>));
+builder.Services.AddScoped(typeof(ISupabaseRepository<Models.AccountTransfer>), typeof(Repositories.SupabaseRepository<Models.AccountTransfer>));
+builder.Services.AddScoped(typeof(ISupabaseRepository<Models.Feedback>), typeof(Repositories.SupabaseRepository<Models.Feedback>));
 
 builder.Services.AddScoped<ISavingsHistoryBL, SavingsHistoryBL>();
 builder.Services.AddScoped<ISavingsHistoryDL, SavingsHistoryDL>();
@@ -30,6 +66,12 @@ builder.Services.AddScoped<IIncomeBL, IncomeBL>();
 builder.Services.AddScoped<IIncomeDL, IncomeDL>();
 builder.Services.AddScoped<IFixedExpenseBL, FixedExpenseBL>();
 builder.Services.AddScoped<IFixedExpenseDL, FixedExpenseDL>();
+builder.Services.AddScoped<IAccountTransferBL, AccountTransferBL>();
+builder.Services.AddScoped<IAccountTransferDL, AccountTransferDL>();
+builder.Services.AddScoped<IFeedbackBL, FeedbackBL>();
+builder.Services.AddScoped<IFeedbackDL, FeedbackDL>();
+builder.Services.AddHttpClient();
+builder.Services.AddScoped<IAIService, AIService>();
 builder.Services.AddScoped<CategoriesBL>();
 
 
@@ -96,6 +138,9 @@ app.MapGet("/weatherforecast", () =>
 })
 .WithName("GetWeatherForecast")
 .WithOpenApi();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 

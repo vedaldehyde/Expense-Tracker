@@ -6,8 +6,8 @@ namespace Interfaces
 {
     public interface IIncomeBL
     {
-        Task CreateIncomeAsync(IncomeRequest request);
-        Task<IncomeResponse> GetIncomesAsync();
-        Task UpdateIncomeAsync(IncomeRequest request);
+        Task CreateIncomeAsync(Guid userId, IncomeRequest request);
+        Task<IncomeResponse> GetIncomesAsync(Guid userId);
+        Task UpdateIncomeAsync(Guid userId, IncomeRequest request);
     }
 }

@@ -1,6 +1,9 @@
 using DL;
 using Interfaces;
 using Models;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace BL
 {
@@ -15,46 +18,71 @@ namespace BL
             _savingsHistoryDL = savingsHistoryDL;
         }
 
-        public async Task CreateSavingsHistoryAsync(SavingsHistoryRequest request)
+        public async Task CreateSavingsHistoryAsync(Guid userId, SavingsHistoryRequest request)
         {
             try
             {
-                var dashboard = await _budgetDL.GetBudgetsFromDB();
-                if (dashboard == null)
+                var dashboard = await _budgetDL.GetBudgetsFromDB(userId);
+                if (dashboard == null || !dashboard.Any())
                     return;
 
-                var savedBudget = dashboard.Find(budget => budget.budget_id == request.budget_id);
+                var targetBudget = dashboard.FirstOrDefault(b => b.budget_id == request.budget_id);
+                if (targetBudget == null)
+                    return;
 
-
-                // Check budget completion / overspent
-
-                if (savedBudget?.budget_status?.ToUpper() != "COMPLETED" && savedBudget?.is_active == false)
+                if (targetBudget.budget_type?.ToLower() != "savings" && !targetBudget.is_active)
                 {
                     return;
                 }
 
-                double savingsAmount = Convert.ToDouble(savedBudget?.budget_amount)  - Convert.ToDouble(savedBudget?.spent_amount);
+                double contributionAmount = request.amount.HasValue && request.amount.Value > 0
+                    ? request.amount.Value
+                    : (targetBudget.budget_amount > 0 ? targetBudget.budget_amount : targetBudget.target_amount);
 
-                if (savingsAmount <= 0)
+                if (contributionAmount <= 0)
                     return;
-
-
 
                 var savingsHistory = new SavingsHistory
                 {
-                    user_id = Guid.Parse("a54182db-cb26-4f43-abb7-abad3c04e6f5"),
+                    user_id = userId,
                     budget_id = request.budget_id,
-                    saved_amount = savingsAmount,
+                    saved_amount = contributionAmount,
                     credited_on = DateTime.UtcNow,
+                    description = request.description ?? "Savings Contribution",
                     created_at = DateTime.UtcNow
                 };
+
                 await _savingsHistoryDL.CreateSavingsHistoryInDB(savingsHistory);
-                await _budgetDL.UpdateBudgetSavingsStatus(request.budget_id);
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Console.WriteLine($"[SavingsHistoryBL Error]: {e.Message}");
             }
+        }
+
+        public async Task<double> GetTotalSavingsAsync(Guid userId)
+        {
+            return await _savingsHistoryDL.GetTotalSavingsFromDB(userId);
+        }
+
+        public async Task<double> GetUnallocatedSavingsAsync(Guid userId)
+        {
+            return await _savingsHistoryDL.GetUnallocatedSavingsFromDB(userId);
+        }
+
+        public async Task<ContributionResult> AddSavingsGoalContributionAsync(Guid userId, SavingsContributionRequest request)
+        {
+            if (request == null)
+            {
+                return new ContributionResult { success = false, message = "Invalid contribution payload." };
+            }
+
+            if (request.amount <= 0)
+            {
+                return new ContributionResult { success = false, message = "Contribution amount must be greater than zero." };
+            }
+
+            return await _savingsHistoryDL.AddSavingsGoalContributionInDB(userId, request);
         }
     }
 }

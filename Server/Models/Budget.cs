@@ -1,5 +1,7 @@
 using Postgrest.Attributes;
 using Postgrest.Models;
+using System;
+using System.Collections.Generic;
 
 namespace Models
 {
@@ -10,10 +12,10 @@ namespace Models
         public Guid id { get; set; }
 
         [Column("income_id")]
-        public Guid income_id { get; set; }
+        public Guid? income_id { get; set; }
 
         [Column("user_id")]
-        public Guid user_id { get; set; }
+        public Guid? user_id { get; set; }
 
         [Column("budget_name")]
         public string? budget_name { get; set; }
@@ -41,6 +43,12 @@ namespace Models
 
         [Column("is_active")]
         public bool is_active { get; set; }
+
+        [Column("is_savings_credited")]
+        public bool is_savings_credited { get; set; }
+
+        [Column("created_at")]
+        public DateTime created_at { get; set; }
     }
 
     public class BudgetRequest
@@ -67,6 +75,7 @@ namespace Models
         public DateOnly start_date { get; set; }
         public DateOnly end_date { get; set; }
         public double budget_amount { get; set; }
+        public double target_amount { get; set; }
         public double spent_amount { get; set; }
         public double remaining_amount { get; set; }
         public double saved_amount { get; set; }
@@ -76,6 +85,8 @@ namespace Models
         public bool is_active { get; set; }
         public Guid income_id { get; set; }
         public bool is_savings_credited { get; set; }
+        public double variable_expense { get; set; }
+        public double fixed_expense { get; set; }
     }
 
     public class BudgetIdResponse

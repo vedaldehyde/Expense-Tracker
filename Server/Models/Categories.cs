@@ -9,10 +9,12 @@ namespace Models
         [PrimaryKey("id", false)]
         public Guid id { get; set; }
 
-        [Column("created_at")]
-        public DateTime? created_at { get; set; }
-
         [Column("category_type")]
         public string? category_type { get; set; }
+    }
+
+    public class CreateCategoryRequest
+    {
+        public string CategoryType { get; set; } = string.Empty;
     }
 }

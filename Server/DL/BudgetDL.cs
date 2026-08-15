@@ -1,5 +1,9 @@
 using Interfaces;
 using Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace DL
 {
@@ -29,14 +33,20 @@ namespace DL
                     { "p_budget_amount", budget.budget_amount }
                 });
 
-            return result.First().Id;
+            var firstResult = result?.FirstOrDefault();
+            if (firstResult == null)
+            {
+                throw new InvalidOperationException("Failed to create budget. Database returned no result.");
+            }
+
+            return firstResult.Id;
         }
 
-        public async Task<List<BudgetDetails>> GetBudgetsFromDB()
+        public async Task<List<BudgetDetails>> GetBudgetsFromDB(Guid userId)
         {
             Dictionary<string, object> parameters = new Dictionary<string, object>
             {
-                { "p_user_id", Guid.Parse("a54182db-cb26-4f43-abb7-abad3c04e6f5")}
+                { "p_user_id", userId }
             };
             var list = await _supabaseRepository.ExecuteFunctionAsync<BudgetDetails>("get_budget_dashboard", parameters);
             return list ?? new List<BudgetDetails>();

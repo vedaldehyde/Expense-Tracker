@@ -13,19 +13,19 @@ namespace BL
             _incomeDL = incomeDL;
         }
 
-        public async Task CreateIncomeAsync(IncomeRequest request)
+        public async Task CreateIncomeAsync(Guid userId, IncomeRequest request)
         {
-            await _incomeDL.CreateIncomeInDB(request);
+            await _incomeDL.CreateIncomeInDB(userId, request);
         }
 
-        public async Task<IncomeResponse> GetIncomesAsync()
+        public async Task<IncomeResponse> GetIncomesAsync(Guid userId)
         {
-            return await _incomeDL.GetIncomesFromDB();
+            return await _incomeDL.GetIncomesFromDB(userId);
         }
 
-        public async Task UpdateIncomeAsync(IncomeRequest request)
+        public async Task UpdateIncomeAsync(Guid userId, IncomeRequest request)
         {
-            await _incomeDL.UpdateIncomeInDB(request);
+            await _incomeDL.UpdateIncomeInDB(userId, request);
         }
     }
 }

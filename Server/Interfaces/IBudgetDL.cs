@@ -5,7 +5,7 @@ namespace Interfaces
     public interface IBudgetDL
     {
         Task<Guid> CreateBudgetInDB(Budget budget);
-        Task<List<BudgetDetails>> GetBudgetsFromDB();
+        Task<List<BudgetDetails>> GetBudgetsFromDB(Guid userId);
         Task UpdateBudgetSavingsStatus(Guid budgetId);
     }
 }

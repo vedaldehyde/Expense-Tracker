@@ -10,9 +10,9 @@ namespace BL
 
         }
         
-        public async Task CreateFixedExpenseAsync(BudgetRequest request)
+        public Task CreateFixedExpenseAsync(BudgetRequest request)
         {
-            
+            return Task.CompletedTask;
         }
     }
 }

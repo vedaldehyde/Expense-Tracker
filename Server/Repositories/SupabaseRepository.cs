@@ -14,29 +14,60 @@ namespace Repositories
             _client = client;
         }
 
+        public Client GetClient() => _client;
+
         public async Task<List<T>> GetAllAsync()
         {
             try
             {
                 var response = await _client.From<T>().Get();
-                return response.Models;
+                return response.Models ?? new List<T>();
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message.ToString());
-                return null;
+                Console.WriteLine($"[SupabaseRepository] GetAllAsync error: {e.Message}");
+                return new List<T>();
             }
-            
+        }
+
+        public async Task<List<T>> GetByUserIdAsync(Guid userId)
+        {
+            try
+            {
+                var typeName = typeof(T).Name;
+                var response = await _client
+                    .From<T>()
+                    .Filter("user_id", Postgrest.Constants.Operator.Equals, userId.ToString())
+                    .Get();
+
+                var models = response.Models ?? new List<T>();
+                Console.WriteLine($"[SupabaseRepository.GetByUserIdAsync] Table={typeName}, UserId={userId}, Returned={models.Count} rows.");
+                return models;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"[SupabaseRepository.GetByUserIdAsync ERROR] Table={typeof(T).Name}, UserId={userId}, ExceptionType={e.GetType().Name}, Message={e.Message}");
+                throw;
+            }
         }
 
         public async Task<T?> GetByIdAsync(T id)
         {
-            var response = await _client
-                .From<T>()
-                .Filter("id", Postgrest.Constants.Operator.Equals, id)
-                .Get();
+            try
+            {
+                var idStr = id?.ToString() ?? string.Empty;
+                var response = await _client
+                    .From<T>()
+                    .Filter("id", Postgrest.Constants.Operator.Equals, idStr)
+                    .Get();
 
-            return response.Models.FirstOrDefault();
+                return response.Models.FirstOrDefault();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"[SupabaseRepository] GetByIdAsync error: {e.Message}");
+                return null;
+            }
         }
 
         public async Task CreateAsync(T entity)
@@ -60,7 +91,7 @@ namespace Repositories
                 .Delete(entity);
         }
 
-        public async Task<List<TResult>>ExecuteFunctionAsync<TResult>(string functionName, Dictionary<string, object>? parameters = null)
+        public async Task<List<TResult>> ExecuteFunctionAsync<TResult>(string functionName, Dictionary<string, object>? parameters = null)
         {
             try
             {
@@ -78,9 +109,9 @@ namespace Repositories
             }
             catch (System.Exception e)
             {
-                System.Console.WriteLine(e.Message.ToString());
+                System.Console.WriteLine($"[SupabaseRepository] ExecuteFunctionAsync error for '{functionName}': {e.Message}");
+                throw;
             }
-            return null;
         }
     }
 }

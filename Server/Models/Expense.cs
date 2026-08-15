@@ -58,7 +58,6 @@ namespace Models
 
         [Postgrest.Attributes.Column("budget_id")]
         public Guid? budget_id { get; set; }
-
     }
 
     public class ExpenseRequest
@@ -71,7 +70,7 @@ namespace Models
         public string? description { get; set; }
         public string? payment_method { get; set; }
         public DateTime date { get; set; }
-        public Guid income_id { get; set; }
+        public Guid? income_id { get; set; }
     }
 
     public class ExpenseDetails
@@ -91,5 +90,18 @@ namespace Models
         public Guid category_id { get; set; }
         public Guid budget_id { get; set; }
         public string? description { get; set; }
+    }
+
+    public class ExpenseCategorySummary
+    {
+        public Guid category_id { get; set; }
+        public string? category_type { get; set; }
+        public decimal amount { get; set; }
+    }
+
+    public class ExpenseCategorySummaryRequest
+    {
+        public int month { get; set; }
+        public int year { get; set; }
     }
 }

@@ -1,5 +1,10 @@
 using Interfaces;
 using Models;
+using Repositories;
+using System.Linq;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System;
 
 namespace DL
 {
@@ -11,45 +16,188 @@ namespace DL
             _supabaseRepository = supabaseRepository;
         }
         
-        public async Task CreateExpenseInDB(ExpenseRequest request)
+        public async Task CreateExpenseInDB(Guid userId, ExpenseRequest request)
         {
-            System.Console.WriteLine("Category id ",request.category_id);
-            // safely parse category_id, fall back to a new GUID if parsing fails or input is null
-            Guid categoryId;
-            if (!Guid.TryParse(request.category_id, out categoryId))
+            Guid categoryId = Guid.Empty;
+            if (!string.IsNullOrEmpty(request.category_id))
             {
-                categoryId = Guid.NewGuid();
+                Guid.TryParse(request.category_id, out categoryId);
+            }
+
+            var client = _supabaseRepository.GetClient();
+
+            // Validate categoryId against categories table
+            try
+            {
+                var categoriesRes = await client.From<Categories>().Get();
+                var validCategories = categoriesRes.Models ?? new List<Categories>();
+
+                var matchedCategory = validCategories.FirstOrDefault(c => c.id == categoryId);
+                if (matchedCategory == null && !string.IsNullOrEmpty(request.category))
+                {
+                    matchedCategory = validCategories.FirstOrDefault(c => c.category_type != null && c.category_type.Equals(request.category.Trim(), StringComparison.OrdinalIgnoreCase));
+                }
+
+                if (matchedCategory != null)
+                {
+                    categoryId = matchedCategory.id;
+                }
+                else if (validCategories.Any())
+                {
+                    categoryId = validCategories.First().id;
+                }
+            }
+            catch (Exception catEx)
+            {
+                Console.WriteLine($"[ExpenseDL Category Validation Warning]: {catEx.Message}");
+            }
+
+            Guid? validIncomeId = (request.income_id.HasValue && request.income_id.Value != Guid.Empty) ? request.income_id.Value : null;
+
+            // Validate that selected income account belongs strictly to authenticated userId
+            if (validIncomeId.HasValue)
+            {
+                var incomeRepo = new SupabaseRepository<Income>(client);
+                var userIncomes = await incomeRepo.GetByUserIdAsync(userId) ?? new List<Income>();
+                var targetIncome = userIncomes.FirstOrDefault(i => i.id == validIncomeId.Value && i.user_id == userId);
+
+                if (targetIncome == null)
+                {
+                    throw new InvalidOperationException("Selected income account not found or unauthorized.");
+                }
             }
 
             var expense = new Expense
             {
                 id = Guid.NewGuid(),
-                user_id = Guid.Parse("a54182db-cb26-4f43-abb7-abad3c04e6f5"),
-                category_id = categoryId,
+                user_id = userId,
+                category_id = categoryId != Guid.Empty ? categoryId : null,
                 title = request.title,
                 description = request.description,
                 amount = request.amount,
                 payment_method = request.payment_method,
-                transaction_date = DateTime.Now,
+                transaction_date = request.date != default ? request.date : DateTime.UtcNow,
                 priority = request.priority,
-                income_id = request.income_id
+                income_id = validIncomeId
             };
-            try
-            {
-                await _supabaseRepository.CreateAsync(expense);
-            }
-            catch (Exception e)
-            {
-               System.Console.WriteLine(e.Message.ToString());
-            }
-            
+
+            await _supabaseRepository.CreateAsync(expense);
+            Console.WriteLine($"[ExpenseDL Success]: Inserted expense {expense.id} ({expense.title}) into expense table.");
         }
 
-        public async Task<List<ExpenseDetails>> GetExpensesFromDB()
+        public async Task CreateSavingsFundedExpenseInDB(Guid userId, ExpenseRequest request)
         {
-            // For now fetch all expenses; you can filter based on request later
-            var list = await _supabaseRepository.ExecuteFunctionAsync<ExpenseDetails>("get_expense_details");
-            return list ?? new List<ExpenseDetails>();
+            Guid categoryId = Guid.Empty;
+            if (!string.IsNullOrEmpty(request.category_id))
+            {
+                Guid.TryParse(request.category_id, out categoryId);
+            }
+
+            var client = _supabaseRepository.GetClient();
+
+            try
+            {
+                var categoriesRes = await client.From<Categories>().Get();
+                var validCategories = categoriesRes.Models ?? new List<Categories>();
+
+                var matchedCategory = validCategories.FirstOrDefault(c => c.id == categoryId);
+                if (matchedCategory == null && !string.IsNullOrEmpty(request.category))
+                {
+                    matchedCategory = validCategories.FirstOrDefault(c => c.category_type != null && c.category_type.Equals(request.category.Trim(), StringComparison.OrdinalIgnoreCase));
+                }
+
+                if (matchedCategory != null)
+                {
+                    categoryId = matchedCategory.id;
+                }
+                else if (validCategories.Any())
+                {
+                    categoryId = validCategories.First().id;
+                }
+            }
+            catch (Exception catEx)
+            {
+                Console.WriteLine($"[ExpenseDL Category Validation Warning]: {catEx.Message}");
+            }
+
+            Guid? validIncomeId = (request.income_id.HasValue && request.income_id.Value != Guid.Empty) ? request.income_id.Value : null;
+            if (!validIncomeId.HasValue)
+            {
+                throw new InvalidOperationException("A valid income account ID is required for savings-funded expense.");
+            }
+
+            var parameters = new Dictionary<string, object>
+            {
+                { "p_user_id", userId },
+                { "p_income_id", validIncomeId.Value },
+                { "p_category_id", categoryId != Guid.Empty ? categoryId : DBNull.Value },
+                { "p_title", request.title ?? "Expense" },
+                { "p_description", request.description ?? "Savings-funded shortfall expense" },
+                { "p_amount", request.amount ?? 0 },
+                { "p_payment_method", request.payment_method ?? "Savings Vault" },
+                { "p_priority", request.priority ?? "Medium" },
+                { "p_transaction_date", request.date != default ? request.date : DateTime.UtcNow }
+            };
+
+            await _supabaseRepository.ExecuteFunctionAsync<object>("create_savings_funded_expense", parameters);
+            Console.WriteLine($"[ExpenseDL Success]: Executed create_savings_funded_expense for user {userId}, income {validIncomeId.Value}.");
+        }
+
+        public async Task<List<ExpenseDetails>> GetExpensesFromDB(Guid userId)
+        {
+            try
+            {
+                var userExpenses = await _supabaseRepository.GetByUserIdAsync(userId) ?? new List<Expense>();
+                userExpenses = userExpenses.Where(e => e.user_id == userId).ToList();
+
+                var categoryRepo = new SupabaseRepository<Categories>(_supabaseRepository.GetClient());
+                var categories = await categoryRepo.GetAllAsync() ?? new List<Categories>();
+                var catDict = categories.ToDictionary(c => c.id, c => c.category_type ?? "General");
+
+                return userExpenses.Select(e => new ExpenseDetails
+                {
+                    expense_id = e.id,
+                    amount = e.amount,
+                    title = e.title,
+                    description = e.description,
+                    transaction_date = e.transaction_date,
+                    category_type = e.category_id.HasValue && catDict.TryGetValue(e.category_id.Value, out var catName) ? catName : "General"
+                }).OrderByDescending(e => e.transaction_date).ToList();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[ExpenseDL GetExpenses Error]: {ex.Message}");
+                return new List<ExpenseDetails>();
+            }
+        }
+
+        public async Task<List<ExpenseCategorySummary>> GetExpenseByCategoryAsync(Guid userId, ExpenseCategorySummaryRequest request)
+        {
+            try
+            {
+                var userExpenses = await _supabaseRepository.GetByUserIdAsync(userId) ?? new List<Expense>();
+                var categoryRepo = new SupabaseRepository<Categories>(_supabaseRepository.GetClient());
+                var categories = await categoryRepo.GetAllAsync() ?? new List<Categories>();
+                var catDict = categories.ToDictionary(c => c.id, c => c.category_type ?? "General");
+
+                var filtered = userExpenses.Where(e => e.user_id == userId &&
+                                                   e.transaction_date.HasValue &&
+                                                   e.transaction_date.Value.Month == request.month &&
+                                                   e.transaction_date.Value.Year == request.year);
+
+                return filtered.GroupBy(e => e.category_id)
+                    .Select(g => new ExpenseCategorySummary
+                    {
+                        category_id = g.Key ?? Guid.Empty,
+                        category_type = g.Key.HasValue && catDict.TryGetValue(g.Key.Value, out var cName) ? cName : "Other",
+                        amount = (decimal)g.Sum(e => e.amount ?? 0)
+                    }).ToList();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[ExpenseDL GetExpenseByCategory Error]: {ex.Message}");
+                return new List<ExpenseCategorySummary>();
+            }
         }
     }
 }
