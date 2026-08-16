@@ -6,8 +6,13 @@ const ActiveBudgets = ({ style }) => {
     const { budgets, toggleSavingsModal } = useContext(AppContext);
     const navigate = useNavigate();
 
-    // Filter budgets to get active ones strictly by is_active lifecycle status
-    const activeBudgets = budgets ? budgets.filter(b => b.is_active === true) : [];
+    // Filter budgets to get active ones by is_active status or ACTIVE/OVERSPENT budget_status
+    const activeBudgets = budgets ? budgets.filter(b => 
+        (b.is_active === true || b.budget_status?.toUpperCase() === "ACTIVE" || b.budget_status?.toUpperCase() === "OVERSPENT") &&
+        b.budget_status?.toUpperCase() !== "COMPLETED" &&
+        b.budget_status?.toUpperCase() !== "PAST DUE" &&
+        b.budget_status?.toUpperCase() !== "UPCOMING"
+    ) : [];
     
     // Filter and sort upcoming budgets
     const upcomingBudgets = budgets 

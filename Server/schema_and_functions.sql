@@ -222,6 +222,7 @@ BEGIN
         END AS spending_percentage,
 
         CASE
+            WHEN NOT b.is_active AND b.is_savings_credited THEN 'Completed'
             WHEN today_ist < b.start_date::date THEN 'Upcoming'
             WHEN b.budget_type = 'regular' AND today_ist > b.end_date::date THEN 'Completed'
             WHEN b.budget_type = 'regular' AND expense_data.amount > b.budget_amount THEN 'Overspent'
