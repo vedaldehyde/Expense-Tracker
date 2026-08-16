@@ -87,6 +87,14 @@ const ExpenseForm = () => {
 
             data.expense_category = finalCategoryId;
             data.priority_type = priorityType;
+            if (selectedCategory === "new") {
+                data.category_name = customCategoryName ? customCategoryName.trim() : 'General';
+            } else {
+                const selectedCatObj = (expenseCategories || []).find(c => c.id === selectedCategory);
+                if (selectedCatObj) {
+                    data.category_name = selectedCatObj.category_type;
+                }
+            }
 
             if (isSavingsFunded) {
                 await submitSavingsFundedExpense(data);

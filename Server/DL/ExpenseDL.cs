@@ -42,7 +42,7 @@ namespace DL
                 {
                     categoryId = matchedCategory.id;
                 }
-                else if (validCategories.Any())
+                else if (categoryId == Guid.Empty && validCategories.Any())
                 {
                     categoryId = validCategories.First().id;
                 }
@@ -110,7 +110,7 @@ namespace DL
                 {
                     categoryId = matchedCategory.id;
                 }
-                else if (validCategories.Any())
+                else if (categoryId == Guid.Empty && validCategories.Any())
                 {
                     categoryId = validCategories.First().id;
                 }
