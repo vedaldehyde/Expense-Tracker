@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, useMemo } from "react";
 import AppContext from "../../context/AppContext";
 
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement } from "chart.js";
@@ -55,13 +55,45 @@ const Categories = ({ style }) => {
   const dynamicYears = Array.from({ length: 12 }, (_, index) => currentYear - index);
   const dynamicMonths = Array.from({ length: 12 }, (_, index) => index + 1);
 
+  // Compute category breakdown from backend categoryExpenses or fallback directly to expenses list
+  const computedCategoryData = useMemo(() => {
+    if (categoryExpenses && Array.isArray(categoryExpenses) && categoryExpenses.length > 0) {
+      return categoryExpenses;
+    }
+
+    if (!expenses || !Array.isArray(expenses) || expenses.length === 0) return [];
+
+    const selectedMonth = Number(categoryFilter.month || (new Date().getMonth() + 1));
+    const selectedYear = Number(categoryFilter.year || new Date().getFullYear());
+
+    const filteredExpenses = expenses.filter(e => {
+      if (!e.transaction_date || e.amount === undefined || e.amount === null) return false;
+      const d = new Date(e.transaction_date);
+      return (d.getMonth() + 1) === selectedMonth && d.getFullYear() === selectedYear;
+    });
+
+    const categoryTotals = {};
+    filteredExpenses.forEach(e => {
+      const catName = e.category_type || e.category || 'Others';
+      const amount = Number(e.amount || 0);
+      if (amount > 0) {
+        categoryTotals[catName] = (categoryTotals[catName] || 0) + amount;
+      }
+    });
+
+    return Object.entries(categoryTotals).map(([catName, total]) => ({
+      category_type: catName,
+      amount: total
+    }));
+  }, [categoryExpenses, expenses, categoryFilter]);
+
   // Pie Chart Data
   const pieData = {
-    labels: categoryExpenses ? categoryExpenses.map(category => category.category_type) : [],
+    labels: computedCategoryData.map(category => category.category_type),
     datasets: [
       {
-        data: categoryExpenses ? categoryExpenses.map(category => category.amount) : [],
-        backgroundColor: categoryExpenses ? categoryExpenses.map(category => getCategoryColor(category.category_type)) : [],
+        data: computedCategoryData.map(category => category.amount),
+        backgroundColor: computedCategoryData.map(category => getCategoryColor(category.category_type)),
         borderWidth: 0
       }
     ]
@@ -170,12 +202,7 @@ const Categories = ({ style }) => {
       </div>
 
       <div className="chart-container-wrapper" style={{ height: isMobile ? '320px' : '280px', width: '100%', position: 'relative', overflow: 'hidden' }}>
-        {categoryExpenses === null ? (
-          <div className="spinner-container">
-            <div className="spinner spinner-md" style={{ color: 'var(--text-muted)' }}></div>
-            <span className="spinner-text" style={{ color: 'var(--text-muted)' }}>Loading spending analytics...</span>
-          </div>
-        ) : categoryExpenses.length === 0 ? (
+        {computedCategoryData.length === 0 ? (
           <div className="ai-empty-state">
             <svg viewBox="0 0 24 24">
               <path d="M21.21 15.89A10 10 0 1 1 8 2.83M22 12A10 10 0 0 0 12 2v10z" />
