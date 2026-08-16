@@ -23,8 +23,8 @@ namespace BL
             {
                 user_id = userId,
                 budget_name = request.budget_name,
-                start_date = request.start_date.AddDays(1),
-                end_date = request.end_date.AddDays(1),
+                start_date = request.start_date,
+                end_date = request.end_date,
                 target_amount = request.target_amount,
                 frequency = request.budget_frequency,
                 budget_type = request.budget_type,
