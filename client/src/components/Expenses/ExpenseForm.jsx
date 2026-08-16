@@ -62,13 +62,26 @@ const ExpenseForm = () => {
             let finalCategoryId = selectedCategory;
 
             if (selectedCategory === "new") {
-                const createdCat = await createCategory(customCategoryName.trim());
-                finalCategoryId = createdCat.id;
-                
-                const updatedCategories = await getExpenseCategories();
-                if (setExpenseCategories) {
-                    setExpenseCategories(updatedCategories);
+                try {
+                    const catName = customCategoryName ? customCategoryName.trim() : 'General';
+                    const createdCat = await createCategory(catName);
+                    if (createdCat && (createdCat.id || createdCat.Id)) {
+                        finalCategoryId = createdCat.id || createdCat.Id;
+                    }
+                } catch (catErr) {
+                    console.warn("Category creation fallback triggered:", catErr);
+                    const fallbackCat = (expenseCategories || []).find(c => c.category_type?.toLowerCase() === 'others') || (expenseCategories || [])[0];
+                    if (fallbackCat) {
+                        finalCategoryId = fallbackCat.id;
+                    }
                 }
+
+                try {
+                    const updatedCategories = await getExpenseCategories();
+                    if (setExpenseCategories && Array.isArray(updatedCategories) && updatedCategories.length > 0) {
+                        setExpenseCategories(updatedCategories);
+                    }
+                } catch (e) {}
             }
 
             data.expense_category = finalCategoryId;
