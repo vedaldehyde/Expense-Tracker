@@ -6,7 +6,7 @@ namespace Models
     [Table("categories")]
     public class Categories : BaseModel
     {
-        [PrimaryKey("id", false)]
+        [PrimaryKey("id", true)]
         public Guid id { get; set; }
 
         [Column("category_type")]
