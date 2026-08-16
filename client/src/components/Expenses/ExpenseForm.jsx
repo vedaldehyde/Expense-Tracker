@@ -28,7 +28,8 @@ const ExpenseForm = () => {
         incomes, 
         budgets,
         unallocatedSavings,
-        fetchTotalSavings
+        fetchTotalSavings,
+        refreshDashboard
     } = useContext(AppContext);
 
     const { showToast } = useToast();
@@ -95,24 +96,28 @@ const ExpenseForm = () => {
                 showToast('Expense created successfully!', 'success');
             }
             
-            const [latestExpenses, latestBudgetData, latestIncomeData] = await Promise.all([
-                getExpenses(),
-                getBudgets(),
-                getIncomes()
-            ]);
+            if (refreshDashboard) {
+                await refreshDashboard();
+            } else {
+                const [latestExpenses, latestBudgetData, latestIncomeData] = await Promise.all([
+                    getExpenses(),
+                    getBudgets(),
+                    getIncomes()
+                ]);
 
-            setExpenses(latestExpenses);
-            setBudgets(latestBudgetData);
+                setExpenses(latestExpenses);
+                setBudgets(latestBudgetData);
 
-            if (setIncomes && latestIncomeData?.incomesList) {
-                setIncomes(latestIncomeData);
-            }
-            if (setTotalIncome && latestIncomeData?.total_balance !== undefined) {
-                setTotalIncome(latestIncomeData.total_balance);
-            }
+                if (setIncomes && latestIncomeData?.incomesList) {
+                    setIncomes(latestIncomeData);
+                }
+                if (setTotalIncome && latestIncomeData?.total_balance !== undefined) {
+                    setTotalIncome(latestIncomeData.total_balance);
+                }
 
-            if (fetchTotalSavings) {
-                await fetchTotalSavings();
+                if (fetchTotalSavings) {
+                    await fetchTotalSavings();
+                }
             }
 
             setPendingData(null);

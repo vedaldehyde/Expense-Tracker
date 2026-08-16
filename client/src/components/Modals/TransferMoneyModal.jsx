@@ -10,7 +10,8 @@ const TransferMoneyModal = () => {
         toggleTransferModal, 
         incomes, 
         setIncomes, 
-        fetchAccountTransfers 
+        fetchAccountTransfers,
+        refreshDashboard
     } = useContext(AppContext);
     
     const { showToast } = useToast();
@@ -88,10 +89,13 @@ const TransferMoneyModal = () => {
 
             showToast('Account transfer completed successfully!', 'success');
 
-            // Refresh account balances and transfer history
-            const latestIncomeData = await getIncomes();
-            setIncomes(latestIncomeData);
-            await fetchAccountTransfers();
+            if (refreshDashboard) {
+                await refreshDashboard();
+            } else {
+                const latestIncomeData = await getIncomes();
+                setIncomes(latestIncomeData);
+                await fetchAccountTransfers();
+            }
 
             toggleTransferModal();
             setFromIncomeId('');

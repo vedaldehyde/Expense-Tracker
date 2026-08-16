@@ -10,7 +10,7 @@ const BudgetForm = () => {
     const defaultTargetDateObj = new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000);
     const formattedTargetDate = `${defaultTargetDateObj.getFullYear()}-${String(defaultTargetDateObj.getMonth() + 1).padStart(2, '0')}-${String(defaultTargetDateObj.getDate()).padStart(2, '0')}`;
 
-    const { toggleBudgetModal, budgetModal, expenseCategories, incomes, setBudgets } = useContext(AppContext);
+    const { toggleBudgetModal, budgetModal, expenseCategories, incomes, setBudgets, refreshDashboard } = useContext(AppContext);
     const { showToast } = useToast();
 
     // Core Form States
@@ -247,8 +247,12 @@ const BudgetForm = () => {
         try {
             await submitBudgetForm(data);
             showToast('Budget configured successfully!', 'success');
-            const latestBudgetData = await getBudgets();
-            setBudgets(latestBudgetData);
+            if (refreshDashboard) {
+                await refreshDashboard();
+            } else {
+                const latestBudgetData = await getBudgets();
+                setBudgets(latestBudgetData);
+            }
 
             setFixedExpenses([]);
             toggleBudgetModal();

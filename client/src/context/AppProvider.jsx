@@ -104,6 +104,36 @@ const AppProvider = ({children}) => {
 
     }, [categoryFilter]);
 
+    const refreshDashboard = async () => {
+        try {
+            const [
+                categories,
+                expensesData,
+                budgetData,
+                incomesData,
+                transfers,
+                catExpenses
+            ] = await Promise.all([
+                getExpenseCategories(),
+                getExpenses(),
+                getBudgets(),
+                getIncomes(),
+                getAccountTransfers(),
+                getCategoryWiseExpenses(categoryFilter)
+            ]);
+
+            setExpenseCategories(categories);
+            setExpenses(expensesData);
+            setBudgets(budgetData);
+            setIncomes(incomesData);
+            setAccountTransfers(transfers);
+            setCategoryExpenses(catExpenses);
+            await fetchTotalSavings();
+        } catch (error) {
+            console.error("Error refreshing dashboard data:", error);
+        }
+    };
+
     return (
         <AppContext.Provider
             value={{
@@ -142,7 +172,8 @@ const AppProvider = ({children}) => {
                 fetchTotalSavings,
                 accountTransfers,
                 setAccountTransfers,
-                fetchAccountTransfers
+                fetchAccountTransfers,
+                refreshDashboard
             }}
         >
             {children}

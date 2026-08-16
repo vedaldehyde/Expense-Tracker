@@ -4,7 +4,7 @@ import AppContext from '../../context/AppContext';
 import { addSavingsContribution, getBudgets, getIncomes } from '../../APIs/api';
 
 const AddSavingsModal = ({ budget: propBudget, onClose: propOnClose, onSuccess }) => {
-    const { savingsModal, selectedSavingsBudget, toggleSavingsModal, setBudgets, setIncomes, fetchTotalSavings } = useContext(AppContext);
+    const { savingsModal, selectedSavingsBudget, toggleSavingsModal, setBudgets, setIncomes, fetchTotalSavings, refreshDashboard } = useContext(AppContext);
 
     const activeBudget = propBudget || selectedSavingsBudget;
     const isModalOpen = propBudget ? true : (savingsModal && Boolean(selectedSavingsBudget));
@@ -58,15 +58,18 @@ const AddSavingsModal = ({ budget: propBudget, onClose: propOnClose, onSuccess }
                 description: description.trim() || 'Fresh Goal Contribution'
             });
 
-            // Refresh all affected context state instantly without page reload
-            const [updatedBudgets, updatedIncomes] = await Promise.all([
-                getBudgets(),
-                getIncomes()
-            ]);
+            if (refreshDashboard) {
+                await refreshDashboard();
+            } else {
+                const [updatedBudgets, updatedIncomes] = await Promise.all([
+                    getBudgets(),
+                    getIncomes()
+                ]);
 
-            if (updatedBudgets) setBudgets(updatedBudgets);
-            if (updatedIncomes) setIncomes(updatedIncomes);
-            if (fetchTotalSavings) await fetchTotalSavings();
+                if (updatedBudgets) setBudgets(updatedBudgets);
+                if (updatedIncomes) setIncomes(updatedIncomes);
+                if (fetchTotalSavings) await fetchTotalSavings();
+            }
 
             if (onSuccess) onSuccess();
             handleClose();
