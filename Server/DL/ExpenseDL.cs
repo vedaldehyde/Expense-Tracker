@@ -33,9 +33,26 @@ namespace DL
                 var validCategories = categoriesRes.Models ?? new List<Categories>();
 
                 var matchedCategory = validCategories.FirstOrDefault(c => c.id == categoryId);
-                if (matchedCategory == null && !string.IsNullOrEmpty(request.category))
+                if (matchedCategory == null && !string.IsNullOrEmpty(request.category) && !Guid.TryParse(request.category, out _))
                 {
-                    matchedCategory = validCategories.FirstOrDefault(c => c.category_type != null && c.category_type.Equals(request.category.Trim(), StringComparison.OrdinalIgnoreCase));
+                    var catName = request.category.Trim();
+                    matchedCategory = validCategories.FirstOrDefault(c => c.category_type != null && c.category_type.Equals(catName, StringComparison.OrdinalIgnoreCase));
+                    if (matchedCategory == null)
+                    {
+                        var newCatId = categoryId != Guid.Empty ? categoryId : Guid.NewGuid();
+                        var newCat = new Categories { id = newCatId, category_type = catName };
+                        try
+                        {
+                            await client.From<Categories>().Insert(newCat);
+                            matchedCategory = newCat;
+                            Console.WriteLine($"[ExpenseDL Auto-Create Category]: Inserted category {catName} ({newCatId}).");
+                        }
+                        catch (Exception autoEx)
+                        {
+                            Console.WriteLine($"[ExpenseDL Auto-Create Category Warning]: {autoEx.Message}");
+                            matchedCategory = newCat;
+                        }
+                    }
                 }
 
                 if (matchedCategory != null)
@@ -101,9 +118,26 @@ namespace DL
                 var validCategories = categoriesRes.Models ?? new List<Categories>();
 
                 var matchedCategory = validCategories.FirstOrDefault(c => c.id == categoryId);
-                if (matchedCategory == null && !string.IsNullOrEmpty(request.category))
+                if (matchedCategory == null && !string.IsNullOrEmpty(request.category) && !Guid.TryParse(request.category, out _))
                 {
-                    matchedCategory = validCategories.FirstOrDefault(c => c.category_type != null && c.category_type.Equals(request.category.Trim(), StringComparison.OrdinalIgnoreCase));
+                    var catName = request.category.Trim();
+                    matchedCategory = validCategories.FirstOrDefault(c => c.category_type != null && c.category_type.Equals(catName, StringComparison.OrdinalIgnoreCase));
+                    if (matchedCategory == null)
+                    {
+                        var newCatId = categoryId != Guid.Empty ? categoryId : Guid.NewGuid();
+                        var newCat = new Categories { id = newCatId, category_type = catName };
+                        try
+                        {
+                            await client.From<Categories>().Insert(newCat);
+                            matchedCategory = newCat;
+                            Console.WriteLine($"[ExpenseDL Auto-Create Category]: Inserted category {catName} ({newCatId}).");
+                        }
+                        catch (Exception autoEx)
+                        {
+                            Console.WriteLine($"[ExpenseDL Auto-Create Category Warning]: {autoEx.Message}");
+                            matchedCategory = newCat;
+                        }
+                    }
                 }
 
                 if (matchedCategory != null)
