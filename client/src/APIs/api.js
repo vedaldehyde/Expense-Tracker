@@ -149,12 +149,22 @@ const getExpenses = async () => {
 };
 
 const createCategory = async (categoryData) => {
+    let payload = categoryData;
+    if (typeof categoryData === 'string') {
+        payload = { CategoryType: categoryData };
+    } else if (typeof categoryData === 'object' && categoryData !== null && !categoryData.CategoryType) {
+        payload = { CategoryType: categoryData.categoryType || categoryData.category_type || '' };
+    }
+
     const res = await authorizedFetch(`${API_BASE_URL}/Categories/CreateCategory`, {
         method: 'POST',
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(categoryData)
+        body: JSON.stringify(payload)
     });
-    if (!res.ok) throw new Error('Failed to create category');
+    if (!res.ok) {
+        const errorMsg = await extractErrorMessage(res, 'Failed to create category');
+        throw new Error(errorMsg);
+    }
     return await res.json();
 };
 
