@@ -16,58 +16,69 @@ namespace DL
             _supabaseRepository = supabaseRepository;
         }
         
+        private async Task<Guid?> ResolveOrCreateCategoryAsync(
+            Supabase.Client client,
+            string? categoryIdRaw,
+            string? categoryNameRaw)
+        {
+            var categoriesRes = await client.From<Categories>().Get();
+            var validCategories = categoriesRes.Models ?? new List<Categories>();
+
+            // 1. If request.category_id contains a valid UUID that exists in categories, use it.
+            if (!string.IsNullOrWhiteSpace(categoryIdRaw) && Guid.TryParse(categoryIdRaw, out Guid targetGuid) && targetGuid != Guid.Empty)
+            {
+                var matchedById = validCategories.FirstOrDefault(c => c.id == targetGuid);
+                if (matchedById != null)
+                {
+                    return matchedById.id;
+                }
+            }
+
+            // 2. Otherwise, if request.category contains a non-empty category name:
+            if (!string.IsNullOrWhiteSpace(categoryNameRaw))
+            {
+                var trimmedName = categoryNameRaw.Trim();
+
+                // Skip if categoryName is a raw GUID string
+                if (!Guid.TryParse(trimmedName, out _))
+                {
+                    // Search existing categories case-insensitively
+                    var matchedByName = validCategories.FirstOrDefault(c =>
+                        c.category_type != null && c.category_type.Equals(trimmedName, StringComparison.OrdinalIgnoreCase));
+
+                    if (matchedByName != null)
+                    {
+                        return matchedByName.id;
+                    }
+
+                    // If not found, create a new categories record with a new UUID and the supplied category name
+                    var newCatId = (!string.IsNullOrWhiteSpace(categoryIdRaw) && Guid.TryParse(categoryIdRaw, out Guid preGenGuid) && preGenGuid != Guid.Empty)
+                        ? preGenGuid
+                        : Guid.NewGuid();
+
+                    var newCategory = new Categories
+                    {
+                        id = newCatId,
+                        category_type = trimmedName
+                    };
+
+                    // Only use newly generated category ID after DB insert succeeds.
+                    // If insertion fails, exception propagates and expense creation fails.
+                    await client.From<Categories>().Insert(newCategory);
+                    Console.WriteLine($"[ExpenseDL.ResolveOrCreateCategoryAsync]: Inserted new category '{trimmedName}' ({newCatId}).");
+                    return newCatId;
+                }
+            }
+
+            // 3. No fallback to validCategories.First().id or any arbitrary category
+            return null;
+        }
+
         public async Task CreateExpenseInDB(Guid userId, ExpenseRequest request)
         {
-            Guid categoryId = Guid.Empty;
-            if (!string.IsNullOrEmpty(request.category_id))
-            {
-                Guid.TryParse(request.category_id, out categoryId);
-            }
-
             var client = _supabaseRepository.GetClient();
 
-            // Validate categoryId against categories table
-            try
-            {
-                var categoriesRes = await client.From<Categories>().Get();
-                var validCategories = categoriesRes.Models ?? new List<Categories>();
-
-                var matchedCategory = validCategories.FirstOrDefault(c => c.id == categoryId);
-                if (matchedCategory == null && !string.IsNullOrEmpty(request.category) && !Guid.TryParse(request.category, out _))
-                {
-                    var catName = request.category.Trim();
-                    matchedCategory = validCategories.FirstOrDefault(c => c.category_type != null && c.category_type.Equals(catName, StringComparison.OrdinalIgnoreCase));
-                    if (matchedCategory == null)
-                    {
-                        var newCatId = categoryId != Guid.Empty ? categoryId : Guid.NewGuid();
-                        var newCat = new Categories { id = newCatId, category_type = catName };
-                        try
-                        {
-                            await client.From<Categories>().Insert(newCat);
-                            matchedCategory = newCat;
-                            Console.WriteLine($"[ExpenseDL Auto-Create Category]: Inserted category {catName} ({newCatId}).");
-                        }
-                        catch (Exception autoEx)
-                        {
-                            Console.WriteLine($"[ExpenseDL Auto-Create Category Warning]: {autoEx.Message}");
-                            matchedCategory = newCat;
-                        }
-                    }
-                }
-
-                if (matchedCategory != null)
-                {
-                    categoryId = matchedCategory.id;
-                }
-                else if (categoryId == Guid.Empty && validCategories.Any())
-                {
-                    categoryId = validCategories.First().id;
-                }
-            }
-            catch (Exception catEx)
-            {
-                Console.WriteLine($"[ExpenseDL Category Validation Warning]: {catEx.Message}");
-            }
+            Guid? categoryId = await ResolveOrCreateCategoryAsync(client, request.category_id, request.category);
 
             Guid? validIncomeId = (request.income_id.HasValue && request.income_id.Value != Guid.Empty) ? request.income_id.Value : null;
 
@@ -88,7 +99,7 @@ namespace DL
             {
                 id = Guid.NewGuid(),
                 user_id = userId,
-                category_id = categoryId != Guid.Empty ? categoryId : null,
+                category_id = categoryId,
                 title = request.title,
                 description = request.description,
                 amount = request.amount,
@@ -104,55 +115,9 @@ namespace DL
 
         public async Task CreateSavingsFundedExpenseInDB(Guid userId, ExpenseRequest request)
         {
-            Guid categoryId = Guid.Empty;
-            if (!string.IsNullOrEmpty(request.category_id))
-            {
-                Guid.TryParse(request.category_id, out categoryId);
-            }
-
             var client = _supabaseRepository.GetClient();
 
-            try
-            {
-                var categoriesRes = await client.From<Categories>().Get();
-                var validCategories = categoriesRes.Models ?? new List<Categories>();
-
-                var matchedCategory = validCategories.FirstOrDefault(c => c.id == categoryId);
-                if (matchedCategory == null && !string.IsNullOrEmpty(request.category) && !Guid.TryParse(request.category, out _))
-                {
-                    var catName = request.category.Trim();
-                    matchedCategory = validCategories.FirstOrDefault(c => c.category_type != null && c.category_type.Equals(catName, StringComparison.OrdinalIgnoreCase));
-                    if (matchedCategory == null)
-                    {
-                        var newCatId = categoryId != Guid.Empty ? categoryId : Guid.NewGuid();
-                        var newCat = new Categories { id = newCatId, category_type = catName };
-                        try
-                        {
-                            await client.From<Categories>().Insert(newCat);
-                            matchedCategory = newCat;
-                            Console.WriteLine($"[ExpenseDL Auto-Create Category]: Inserted category {catName} ({newCatId}).");
-                        }
-                        catch (Exception autoEx)
-                        {
-                            Console.WriteLine($"[ExpenseDL Auto-Create Category Warning]: {autoEx.Message}");
-                            matchedCategory = newCat;
-                        }
-                    }
-                }
-
-                if (matchedCategory != null)
-                {
-                    categoryId = matchedCategory.id;
-                }
-                else if (categoryId == Guid.Empty && validCategories.Any())
-                {
-                    categoryId = validCategories.First().id;
-                }
-            }
-            catch (Exception catEx)
-            {
-                Console.WriteLine($"[ExpenseDL Category Validation Warning]: {catEx.Message}");
-            }
+            Guid? categoryId = await ResolveOrCreateCategoryAsync(client, request.category_id, request.category);
 
             Guid? validIncomeId = (request.income_id.HasValue && request.income_id.Value != Guid.Empty) ? request.income_id.Value : null;
             if (!validIncomeId.HasValue)
@@ -164,7 +129,7 @@ namespace DL
             {
                 { "p_user_id", userId },
                 { "p_income_id", validIncomeId.Value },
-                { "p_category_id", categoryId != Guid.Empty ? categoryId : DBNull.Value },
+                { "p_category_id", categoryId.HasValue ? (object)categoryId.Value : DBNull.Value },
                 { "p_title", request.title ?? "Expense" },
                 { "p_description", request.description ?? "Savings-funded shortfall expense" },
                 { "p_amount", request.amount ?? 0 },
