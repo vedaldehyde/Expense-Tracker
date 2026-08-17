@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import AppContext from '../../context/AppContext';
-import { createCategory, getBudgets, getExpenseCategories, getExpenses, getIncomes, submitExpenseForm, submitSavingsFundedExpense } from '../../APIs/api';
+import { getBudgets, getExpenses, getIncomes, submitExpenseForm, submitSavingsFundedExpense } from '../../APIs/api';
 import { useToast } from '../../context/ToastContext';
 import { Spinner } from '../Common/Loader';
 
@@ -20,7 +20,6 @@ const ExpenseForm = () => {
         expenseModal, 
         toggleExpenseModal, 
         expenseCategories, 
-        setExpenseCategories, 
         setExpenses, 
         setBudgets, 
         setIncomes, 
@@ -60,40 +59,15 @@ const ExpenseForm = () => {
     const processExpenseSubmission = async (data, isSavingsFunded = false) => {
         setLoading(true);
         try {
-            let finalCategoryId = selectedCategory;
-
-            if (selectedCategory === "new") {
-                try {
-                    const catName = customCategoryName ? customCategoryName.trim() : 'General';
-                    const createdCat = await createCategory(catName);
-                    if (createdCat && (createdCat.id || createdCat.Id)) {
-                        finalCategoryId = createdCat.id || createdCat.Id;
-                    }
-                } catch (catErr) {
-                    console.warn("Category creation fallback triggered:", catErr);
-                    const fallbackCat = (expenseCategories || []).find(c => c.category_type?.toLowerCase() === 'others') || (expenseCategories || [])[0];
-                    if (fallbackCat) {
-                        finalCategoryId = fallbackCat.id;
-                    }
-                }
-
-                try {
-                    const updatedCategories = await getExpenseCategories();
-                    if (setExpenseCategories && Array.isArray(updatedCategories) && updatedCategories.length > 0) {
-                        setExpenseCategories(updatedCategories);
-                    }
-                } catch (e) {}
-            }
-
-            data.expense_category = finalCategoryId;
             data.priority_type = priorityType;
+
             if (selectedCategory === "new") {
-                data.category_name = customCategoryName ? customCategoryName.trim() : 'General';
+                data.expense_category = "";
+                data.category_name = customCategoryName.trim();
             } else {
                 const selectedCatObj = (expenseCategories || []).find(c => c.id === selectedCategory);
-                if (selectedCatObj) {
-                    data.category_name = selectedCatObj.category_type;
-                }
+                data.expense_category = selectedCategory;
+                data.category_name = selectedCatObj?.category_type ?? "";
             }
 
             if (isSavingsFunded) {

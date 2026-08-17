@@ -79,10 +79,10 @@ const submitExpenseForm = async (formData) => {
         parsedIncomeId = formData.income_source;
     }
     const request = {
-        category_id: formData.expense_category,
+        category_id: (formData.expense_category && formData.expense_category.trim() !== "") ? formData.expense_category : null,
         title: formData.expense_title,
         amount: Number(formData.expense_amount),
-        category: formData.category_name || formData.category_type || formData.custom_category || formData.expense_category,
+        category: (formData.category_name && formData.category_name.trim() !== "") ? formData.category_name : null,
         description: formData.expense_notes || "",
         payment_method: formData.payment_method || "UPI",
         priority: formData.priority_type || "normal",
@@ -110,10 +110,10 @@ const submitSavingsFundedExpense = async (formData) => {
         parsedIncomeId = formData.income_source;
     }
     const request = {
-        category_id: formData.expense_category,
+        category_id: (formData.expense_category && formData.expense_category.trim() !== "") ? formData.expense_category : null,
         title: formData.expense_title,
         amount: Number(formData.expense_amount),
-        category: formData.category_name || formData.category_type || formData.custom_category || formData.expense_category,
+        category: (formData.category_name && formData.category_name.trim() !== "") ? formData.category_name : null,
         description: formData.expense_notes || "",
         payment_method: "Savings Vault",
         priority: formData.priority_type || "normal",
